@@ -1,0 +1,36 @@
+services:
+  identity_database:
+    image: arm64v8/postgres:latest
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: identity_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - identity_data:/var/lib/postgresql
+
+  resource_database:
+    image: arm64v8/postgres:latest
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: resource_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - resource_data:/var/lib/postgresql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  identity_data:
+  resource_data:

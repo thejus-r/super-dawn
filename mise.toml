@@ -2,8 +2,8 @@
 go = "latest"
 
 [env]
-DB_DSN_AUTH = "postgres://admin:secret_password@localhost:5432/auth_db"
-DB_DSN_RESOURCE= "postgres://admin:secret_password@localhost:5432/auth_db"
+DB_DSN_AUTH = "postgres://admin:secret_password@localhost:5432/identity_db"
+DB_DSN_RESOURCE= "postgres://admin:secret_password@localhost:5433/resource_db"
 GOOSE_DRIVER = "postgres"
 
 # ************ BUILD ***********
@@ -23,10 +23,12 @@ run = "go build -o ./dist/resource cmd/resource/main.go"
 [tasks.dev-identity]
 description = "Starts a dev server"
 run = "go run cmd/main.go"
+sources = ["**/*.{tmpl,go}"]
 
 [tasks.dev-resource]
 description = "Starts a dev server for Resource Service"
 run = "go run cmd/resource/main.go"
+sources = ["**/*.{tmpl,go}"]
 
 # ************ Migrations ***********
 # ------ Identity Migrations ------
@@ -48,15 +50,15 @@ run = "goose -s -dir migrations/auth $DB_DSN_AUTH create ${usage_name?} sql"
 # ------ Resource Migrations ------
 [tasks.migrate-resource-up]
 description = "Run DB migrations for Resource"
-run = "goose -dir migrations/resource $DB_DSN_AUTH up"
+run = "goose -dir migrations/resource $DB_DSN_RESOURCE up"
 
 [tasks.migrate-resource-down]
 description = "Rollback DB migrations for Resource"
-run = "goose -dir migrations/resource $DB_DSN_AUTH down"
+run = "goose -dir migrations/resource $DB_DSN_RESOURCE down"
 
 [tasks.new-migration-resource]
 description = "Create new Resource Database migration"
 usage = '''
 arg "<name>" help="Migration name"
 '''
-run = "goose -s -dir migrations/resource $DB_DSN_AUTH create ${usage_name?} sql"
+run = "goose -s -dir migrations/resource $DB_DSN_RESOURCE create ${usage_name?} sql"

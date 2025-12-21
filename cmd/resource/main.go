@@ -1,26 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/thejus-r/super-dawn/pkg/auth"
+	"github.com/thejus-r/super-dawn/internal/resource"
 )
 
 func main() {
-	authValidator, err := auth.NewValidator("http://localhost:8081/.well-known/jwks.json")
+	cfg, err := resource.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to initialize auth validator: %v", err)
+		log.Fatalf("failed to load config: %v", err)
 	}
 
-	mux := http.NewServeMux()
-	protectedHandler := func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello from Microservice A! You are authenticated"))
+	app := resource.InitApp(cfg)
+
+	if err := app.Run(); err != nil {
+		log.Fatalf("resource service crashed: %v", err)
 	}
-
-	mux.HandleFunc("/api/data", authValidator.Middleware(protectedHandler))
-
-	fmt.Println("Microservice A running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
 }

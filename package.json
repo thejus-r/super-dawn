@@ -1,0 +1,23 @@
+{
+  "name": "superdawn",
+  "module": "index.ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "turbo": "^2.7.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "packageManager": "bun@1.3.5"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@superdawn/api",
+  "type": "module",
+  "scripts": {
+    "dev": "bun src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
+    "elysia": "^1.4.21",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@superdawn/typescript-config": "workspace:*",
+    "@types/bun": "latest",
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.8",
+    "tsx": "^4.21.0"
+  }
+}

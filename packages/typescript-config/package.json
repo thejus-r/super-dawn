@@ -1,0 +1,8 @@
+{
+  "name": "@superdawn/typescript-config",
+  "files": [
+    "base.json",
+    "react.json",
+    "bun.json"
+  ]
+}

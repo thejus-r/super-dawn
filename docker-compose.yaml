@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    environment:
+      - NODE_ENV=production
+    restart: always
+    ports:
+      - "3000:3000"
+    init: true
+
+    command: ["bun", "run", "dev"]
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/api/src
+          target: /app/apps/api/src
+          ignore:
+            - node_modules/
+
+        - action: rebuild
+          path: ./apps/api/package.json
+
+  db:
+    image: arm64v8/postgres:trixie
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: superdawn_db
+      POSTGRES_USER: sudawn
+      POSTGRES_PASSWORD: example
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg_data:/var/lib/postgresql
+
+volumes:
+  pg_data:

@@ -2,6 +2,9 @@
   "extends": "@superdawn/typescript-config/bun.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src", "drizzle.config.ts"]
+  "include": ["src", "drizzle.config.ts", "vitest.config.ts"]
 }

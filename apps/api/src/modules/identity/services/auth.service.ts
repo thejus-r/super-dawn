@@ -1,4 +1,5 @@
 import type { IAuthRepository, IAuthService } from "../domain/auth.domain";
+import type { Session } from "../domain/entity/session.entity";
 import type { IAuthStrategy, LoginMethodType } from "../domain/ports/auth-strategy.interface";
 import type { ITokenProvider } from "../domain/ports/token-provider";
 import { TokenProvider } from "../infrastructure/providers/token.provider";
@@ -8,18 +9,18 @@ import { EmailPasswordStrategy } from "../infrastructure/strategies";
 import type { CreateUserInput } from "../transport/dto/auth.dto";
 
 export class AuthService implements IAuthService {
-	private authRepository: AuthRepository;
+  private authRepository: AuthRepository;
   private sessionRepository: SessionRepository;
 
   private authStratagies: Record<LoginMethodType, IAuthStrategy>
 
   private tokenProvider: ITokenProvider
 
-	constructor(
-		authRepository: AuthRepository,
+  constructor(
+    authRepository: AuthRepository,
     sessionRepository: SessionRepository,
-	) {
-		this.authRepository = authRepository;
+  ) {
+    this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
 
     this.authStratagies = {
@@ -28,7 +29,7 @@ export class AuthService implements IAuthService {
     }
 
     this.tokenProvider = new TokenProvider()
-	}
+  }
 
   createUser = async ({ method, ...payload }: CreateUserInput) => {
 
@@ -38,13 +39,16 @@ export class AuthService implements IAuthService {
       throw new Error(`authentication strategy "${method}" not found`)
     }
 
-    const user = await strategy.create(payload)
+    const newUser = await strategy.create(payload)
 
-    const {  } = this.tokenProvider.generateRefreshToken()
+    const tokens =  await this.#startSession(newUser.id)
 
-    return user
+    return {
+      user: newUser,
+      ...tokens
+    }
+  };
 
-	};
   loginUser = async ({ method, ...payload }: CreateUserInput) => {
 
     const strategy = this.authStratagies[method]
@@ -52,10 +56,126 @@ export class AuthService implements IAuthService {
       throw new Error(`authentication strategy "${method}" not found`)
     }
 
-    const user = await strategy.create(payload)
+    const user = await strategy.authenticate(payload)
+    const tokens =  await this.#startSession(user.id)
 
-    return user
+    return {
+      user: user,
+      ...tokens
+    }
+  };
 
-	};
-	refreshTokens = () => {};
+  /*
+  returns new token pairs, if the refresh token is valid
+  otherwise based on the validation result, it handles the events and
+  throws appropriate errors
+  */
+
+  // TODO: Change to AppError, once error middleware is added.
+
+  refreshTokens = async (incomingRefreshToken: string) => {
+
+    const hashedIncomingRefreshToken = this.tokenProvider.hashToken(incomingRefreshToken)
+
+    const exisitingSessionRecord = await this.sessionRepository.findWithToken(hashedIncomingRefreshToken)
+
+    if (!exisitingSessionRecord) {
+      throw new Error("token record not found")
+    }
+
+    const { user, ...sessionRecord } = exisitingSessionRecord
+
+    const validationResult = await this.tokenProvider.validateRefreshToken(hashedIncomingRefreshToken, sessionRecord)
+
+    switch (validationResult) {
+      case "VALID": {
+        // Happy Path
+        // We send a response
+        const tokens = await this.#rotateTokens(sessionRecord)
+        return { user, ...tokens }
+      }
+      // less happy path
+      case "TOKEN_REUSED_WITHIN_BUFFER": {
+        const tokens = await this.#refreshAccessToken(incomingRefreshToken, sessionRecord)
+        return { user, ...tokens }
+      }
+      // worst path
+      case "TOKEN_REUSED": {
+        await this.#handleTokenReuse(sessionRecord)
+        throw new Error("token reuse detected")
+      }
+      // sad paths
+      case "EXPIRED": {
+        throw new Error("token has expired")
+      }
+      case "INVALID": {
+        throw new Error("tampered/invalid token")
+      }
+      default:
+      throw new Error("authentication failed")
+    }
+  };
+
+  /*
+  We revoke all the tokens
+  */
+  #handleTokenReuse = async ({ userId }: Session) => {
+    console.warn(`[security] token reuse detected for: ${userId}`)
+    await this.sessionRepository.revokeAll(userId)
+    console.warn(`[security] revoked all tokens for: ${userId}`)
+  }
+
+
+  /*
+  Revokes the exisiting token from the database and creates a new session
+  in the database.
+
+  Returns the new token pair (refreshToken & accessToken)
+  */
+  #rotateTokens = async ({ userId, id }: Session) => {
+
+    const {  token: refreshToken, hashedToken: hashedRefreshToken } = await this.tokenProvider.generateRefreshToken()
+    const accessToken = await this.tokenProvider.generateAccessToken({
+      userId: userId
+    })
+
+    await this.sessionRepository.insertAndRevoke({
+      token: hashedRefreshToken,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      userId:userId
+    }, id)
+
+    return { refreshToken, accessToken }
+  }
+
+  /*
+  When token is revoked within grace period, we only issue a new access-token
+  this ensures better UX for the end-user and keeps the valid window of refresh-token secure
+  */
+  #refreshAccessToken = async (incomingToken: string,{ userId }: Session) => {
+
+    const accessToken = await this.tokenProvider.generateAccessToken({
+      userId: userId
+    })
+
+    return { refreshToken: incomingToken, accessToken }
+  }
+
+  // Helper function that generate the required tokens &
+  // creates a session in the database
+  // Returns the tokens.
+  #startSession = async (userId: string) => {
+    const {  token: refreshToken, hashedToken: hashedRefreshToken } = await this.tokenProvider.generateRefreshToken()
+    const accessToken = await this.tokenProvider.generateAccessToken({
+      userId: userId
+    })
+
+    await this.sessionRepository.create({
+      userId: userId,
+      token: hashedRefreshToken,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+    })
+
+    return { refreshToken, accessToken }
+  }
 }

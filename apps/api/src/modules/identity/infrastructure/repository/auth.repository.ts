@@ -11,6 +11,12 @@ export class AuthRepository {
     this.db = db;
   }
 
+  findByEmail = async (email: string) => {
+    return await this.db.query.users.findFirst({
+      where: eq(users.email, email)
+    })
+  }
+
   create = async (userData: NewUser, credentialData: Omit<NewCredentials, "userId">) => {
     return await this.db.transaction(async (tx) => {
       const [newUser] = await tx.insert(users).values(userData).returning();

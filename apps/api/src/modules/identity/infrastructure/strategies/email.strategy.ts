@@ -12,6 +12,11 @@ export class EmailPasswordStrategy implements IAuthStrategy{
   create = async ({ email, password, firstName, lastName }: AuthPayload) => {
     if (!email || !password) throw new Error("missing credentials");
 
+    const exisitingUser = await this.authRepository.findByEmail(email)
+
+    if (exisitingUser) {
+      throw new Error("the user already exists")
+    }
     const { hash, salt } = await hashPassword(password)
 
     return await this.authRepository.create({

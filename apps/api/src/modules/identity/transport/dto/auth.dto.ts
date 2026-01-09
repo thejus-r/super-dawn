@@ -19,5 +19,4 @@ export const createUserSchema = z.discriminatedUnion("method", [
   createUserWithTokenSchema
 ])
 
-
 export type CreateUserInput = z.Infer<typeof createUserSchema>

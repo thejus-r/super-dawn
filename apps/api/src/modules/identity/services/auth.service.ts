@@ -1,5 +1,7 @@
 import type { IAuthRepository, IAuthService } from "../domain/auth.domain";
 import type { IAuthStrategy, LoginMethodType } from "../domain/ports/auth-strategy.interface";
+import type { ITokenProvider } from "../domain/ports/token-provider";
+import { TokenProvider } from "../infrastructure/providers/token.provider";
 import type { AuthRepository } from "../infrastructure/repository/auth.repository";
 import type { SessionRepository } from "../infrastructure/repository/session.repository";
 import { EmailPasswordStrategy } from "../infrastructure/strategies";
@@ -10,6 +12,8 @@ export class AuthService implements IAuthService {
   private sessionRepository: SessionRepository;
 
   private authStratagies: Record<LoginMethodType, IAuthStrategy>
+
+  private tokenProvider: ITokenProvider
 
 	constructor(
 		authRepository: AuthRepository,
@@ -22,6 +26,8 @@ export class AuthService implements IAuthService {
       email: new EmailPasswordStrategy(this.authRepository),
       google: new EmailPasswordStrategy(this.authRepository)
     }
+
+    this.tokenProvider = new TokenProvider()
 	}
 
   createUser = async ({ method, ...payload }: CreateUserInput) => {
@@ -33,6 +39,8 @@ export class AuthService implements IAuthService {
     }
 
     const user = await strategy.create(payload)
+
+    const {  } = this.tokenProvider.generateRefreshToken()
 
     return user
 

@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import { randomBytes, createHash, timingSafeEqual } from "node:crypto"
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto"
 import { promisify } from "node:util";
+import jwt from 'jsonwebtoken';
 import type { Session } from '../../domain/entity/session.entity';
-import { RefreshTokenValidationResult, type AccessTokenPayload, type ITokenProvider, type RefreshTokenValidationStatus } from '../../domain/ports/token-provider';
+import { type AccessTokenPayload, type ITokenProvider, RefreshTokenValidationResult, type RefreshTokenValidationStatus } from '../../domain/ports/token-provider';
 
 // converting to async functions with promisify
 const signAsync = promisify<object, jwt.Secret, jwt.SignOptions, string>(
@@ -20,7 +20,7 @@ const verifyAsync = promisify<
 const asyncRandomBytes = promisify(randomBytes);
 
 // CONSTANTS
-const REFRESH_TOKEN_GRACE_PERIOD = 1000 * 10 // 5 seconds
+const REFRESH_TOKEN_GRACE_PERIOD = 10 // 10 seconds
 
 export class TokenProvider implements ITokenProvider {
   private readonly ACCESS_TOKEN_SECRET: string;
@@ -29,7 +29,7 @@ export class TokenProvider implements ITokenProvider {
 
   constructor() {
     this.ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
-    this.ACCESS_TOKEN_EXPIRY =  3600;
+    this.ACCESS_TOKEN_EXPIRY =  1000 * 60 * 15;
   }
 
   generateAccessToken = async (payload: AccessTokenPayload): Promise<string> => {
@@ -64,7 +64,7 @@ export class TokenProvider implements ITokenProvider {
   validateRefreshToken = async (incomingHashedToken: string, exisitingRecord: Session): Promise<RefreshTokenValidationStatus> => {
     const { token: tokenFromDB, expiresAt, revokedAt } = exisitingRecord
     const isValid = this.#compareHash(incomingHashedToken, tokenFromDB)
-    const now = Date.now()
+    const now = Date.now() / 1000
 
     if (!isValid) {
       return RefreshTokenValidationResult.invalid
@@ -74,7 +74,9 @@ export class TokenProvider implements ITokenProvider {
     }
 
     if (revokedAt) {
-      if (now - revokedAt.getTime() < REFRESH_TOKEN_GRACE_PERIOD) {
+
+      const revokedTime = revokedAt.getTime() / 1000
+      if (now - revokedTime < REFRESH_TOKEN_GRACE_PERIOD) {
         return RefreshTokenValidationResult.reusedWithinBuffer
       } else {
         return RefreshTokenValidationResult.reused

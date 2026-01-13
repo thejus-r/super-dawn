@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
-import type { IAuthService } from "../../domain/auth.domain";
-import { createUserSchema } from "../dto/auth.dto";
 import { AppError } from "@/shared/utils/AppError";
+import type { IAuthService } from "../../domain/auth.domain";
+import { createUserSchema, loginUserSchema } from "../dto/auth.dto";
 
 export const createAuthRouter = (authService: IAuthService) => {
   return new Elysia()
@@ -13,7 +13,7 @@ export const createAuthRouter = (authService: IAuthService) => {
 
         refresh_token.set({
           value: refreshToken,
-          expires: new Date(Date.now() + 3600000),
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
           httpOnly: true,
           sameSite: "strict",
         });
@@ -26,7 +26,7 @@ export const createAuthRouter = (authService: IAuthService) => {
         cookie: t.Cookie({
           refresh_token: t.Optional(t.String()),
         }),
-        body: createUserSchema,
+        body: loginUserSchema,
       },
     )
     .post(
@@ -37,7 +37,7 @@ export const createAuthRouter = (authService: IAuthService) => {
 
         refresh_token.set({
           value: refreshToken,
-          expires: new Date(Date.now() + 3600),
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
           httpOnly: true,
           sameSite: "strict",
         });
@@ -49,7 +49,7 @@ export const createAuthRouter = (authService: IAuthService) => {
       },
       {
         cookie: t.Cookie({
-          refresh_token: t.String(),
+          refresh_token: t.Optional(t.String()),
         }),
         body: createUserSchema,
       },
@@ -70,7 +70,7 @@ export const createAuthRouter = (authService: IAuthService) => {
 
         refresh_token.set({
           value: refreshToken,
-          expires: new Date(Date.now() + 3600),
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
           httpOnly: true,
           sameSite: "strict",
         });

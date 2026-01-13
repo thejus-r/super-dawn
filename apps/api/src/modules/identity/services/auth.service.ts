@@ -1,5 +1,5 @@
 import { AppError } from "@/shared/utils/AppError";
-import type { IAuthRepository, IAuthService } from "../domain/auth.domain";
+import type { IAuthService } from "../domain/auth.domain";
 import type { Session } from "../domain/entity/session.entity";
 import type {
   IAuthStrategy,

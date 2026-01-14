@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import type * as React from "react";
 
 const sideBarLink = [
   {
@@ -41,11 +40,4 @@ export const SideBar = ({ orgSlug }: { orgSlug: string}) => {
 			</div>
 		</div>
 	);
-};
-
-interface SideBarLinkProps {
-	orgSlug: string;
-}
-const SideBarLink: React.FC<SideBarLinkProps> = () => {
-	return <Link></Link>;
 };

@@ -41,6 +41,7 @@ function RouteComponent() {
           </Link>
         })}
       </div>
+      <Link to="/create-organization"> Create organization </Link>
     </div>
   </div>
 }

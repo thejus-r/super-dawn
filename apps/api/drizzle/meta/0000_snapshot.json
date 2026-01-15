@@ -1,5 +1,5 @@
 {
-  "id": "b6a546e6-dfb6-4ab1-b885-52887b14b99e",
+  "id": "2210e128-0884-4adf-9c8c-60ae308c312f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -76,7 +76,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "credential_table_provider_provider_id_unique": {
+          "name": "credential_table_provider_provider_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "provider",
+            "provider_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -285,15 +294,15 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(25)",
+          "type": "varchar(128)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(28)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "_created_at": {
           "name": "_created_at",

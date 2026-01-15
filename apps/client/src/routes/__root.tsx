@@ -1,9 +1,10 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import type { AppRouterContext } from "@/app";
 
-export const Route = createRootRoute({
-  component: RootComponent,
-})
+export const Route = createRootRouteWithContext<AppRouterContext>()({
+	component: RootComponent,
+});
 
 function RootComponent() {
-  return <Outlet />
+	return <Outlet />;
 }

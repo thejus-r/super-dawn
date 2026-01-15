@@ -1,11 +1,11 @@
 import type { Elysia } from "elysia";
+import type { ITokenProvider } from "@/modules/identity/domain/ports/token-provider";
 import { AppError } from "@/shared/utils/AppError";
-import type { ITokenProvider } from "../../domain/ports/token-provider";
 
 export const authMiddleware =
 	(tokenProvider: ITokenProvider) => (app: Elysia) =>
 		app.derive({ as: "global" }, async ({ headers }) => {
-			const authHeader = headers["authorization"];
+			const authHeader = headers.authorization;
 
 			if (!authHeader || !authHeader.startsWith("Bearer ")) {
 				throw new AppError({
@@ -28,7 +28,7 @@ export const authMiddleware =
 				const user = await tokenProvider.verifyAccessToken(token);
 
 				return { user };
-			} catch (err) {
+			} catch {
 				throw new AppError({
 					message: "Invalid Access Token",
 					statusCode: 401,
@@ -36,3 +36,5 @@ export const authMiddleware =
 				});
 			}
 		});
+
+export type AuthMiddleware = typeof authMiddleware

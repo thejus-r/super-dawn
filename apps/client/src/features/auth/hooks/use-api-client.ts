@@ -33,7 +33,7 @@ export const useApiClient = () => {
   useLayoutEffect(() => {
     const requestInterceptor = client.interceptors.request.use((config) => {
 
-      const token = accessToken
+      const token = "test"
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -44,7 +44,7 @@ export const useApiClient = () => {
     return () => {
       client.interceptors.request.eject(requestInterceptor);
     };
-  }, [client, accessToken]);
+  }, [client]);
 
   // Response Interceptor
   useLayoutEffect(() => {

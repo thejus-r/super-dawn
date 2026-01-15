@@ -10,7 +10,7 @@ import { TokenProvider } from "../infrastructure/providers/token.provider";
 import type { AuthRepository } from "../infrastructure/repository/auth.repository";
 import type { SessionRepository } from "../infrastructure/repository/session.repository";
 import { EmailPasswordStrategy } from "../infrastructure/strategies";
-import type { CreateUserInput } from "../transport/dto/auth.dto";
+import type { CreateUserInput, LoginUserInput } from "../transport/dto/auth.dto";
 
 export class AuthService implements IAuthService {
   private authRepository: AuthRepository;
@@ -56,7 +56,7 @@ export class AuthService implements IAuthService {
     };
   };
 
-  loginUser = async ({ method, ...payload }: CreateUserInput) => {
+  loginUser = async ({ method, ...payload }: LoginUserInput) => {
     const strategy = this.authStratagies[method];
 
     if (!strategy) {

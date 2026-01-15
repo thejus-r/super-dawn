@@ -7,7 +7,8 @@ CREATE TABLE "credential_table" (
 	"password" varchar(255),
 	"hash_salt" varchar(255),
 	"_created_at" timestamp DEFAULT now() NOT NULL,
-	"_updated_at" timestamp NOT NULL
+	"_updated_at" timestamp NOT NULL,
+	CONSTRAINT "credential_table_provider_provider_id_unique" UNIQUE("provider","provider_id")
 );
 --> statement-breakpoint
 CREATE TABLE "sessions" (
@@ -40,8 +41,8 @@ CREATE TABLE "member_table" (
 --> statement-breakpoint
 CREATE TABLE "organization_table" (
 	"_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar(25),
-	"slug" text,
+	"name" varchar(128) NOT NULL,
+	"slug" varchar(28) NOT NULL,
 	"_created_at" timestamp DEFAULT now() NOT NULL,
 	"_updated_at" timestamp NOT NULL,
 	CONSTRAINT "organization_table_slug_unique" UNIQUE("slug")

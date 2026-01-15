@@ -1,5 +1,5 @@
-import { eq,and } from "drizzle-orm";
-import type { Database, DrizzleDB, TxOrDB } from "@/db";
+import { and, eq} from "drizzle-orm";
+import type { Database, DrizzleDB } from "@/db";
 import { credentials, users } from "@/db/schema";
 import type { NewCredentials } from "../../domain/entity/credential.entity";
 import type { NewUser } from "../../domain/entity/user.entity";

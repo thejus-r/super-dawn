@@ -1,7 +1,9 @@
 import { Elysia, t } from "elysia";
 import { AppError } from "@/shared/utils/AppError";
 import type { IAuthService } from "../../domain/auth.domain";
+import { TokenProvider } from "../../infrastructure/providers/token.provider";
 import { createUserSchema, loginUserSchema } from "../dto/auth.dto";
+import { authMiddleware } from "./auth.middleware";
 
 export const createAuthRouter = (authService: IAuthService) => {
   return new Elysia()
@@ -84,5 +86,11 @@ export const createAuthRouter = (authService: IAuthService) => {
           refresh_token: t.Optional(t.String()),
         }),
       },
-    );
+    )
+    .use(authMiddleware(new TokenProvider()))
+    .get("/me", async ({ user }) => {
+      return Response.json({
+        user,
+      });
+    });
 };

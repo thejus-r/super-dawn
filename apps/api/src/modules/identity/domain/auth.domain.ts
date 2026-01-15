@@ -1,20 +1,23 @@
-import type { CreateUserInput, LoginUserInput } from "../transport/dto/auth.dto"
-import type { User } from "./entity/user.entity"
+import type {
+  CreateUserInput,
+  LoginUserInput,
+} from "../transport/dto/auth.dto";
+import type { User } from "./entity/user.entity";
 
 type AuthResult = {
-  user: User,
-  refreshToken: string,
-  accessToken: string
-}
+  user: User;
+  refreshToken: string;
+  accessToken: string;
+};
 
 export type IAuthService = {
-  createUser: (payload: CreateUserInput) => Promise<AuthResult>
-  loginUser: (payload: LoginUserInput) => Promise<AuthResult>
-  refreshTokens: (incomingToken: string) => Promise<AuthResult>
-}
+  createUser: (payload: CreateUserInput) => Promise<AuthResult>;
+  loginUser: (payload: LoginUserInput) => Promise<AuthResult>;
+  refreshTokens: (incomingToken: string) => Promise<AuthResult>;
+};
 
 export type IAuthRepository = {
-  createUser: () => void
-  loginUser: () => void
-  refreshTokens: () => void
-}
+  createUser: () => void;
+  loginUser: () => void;
+  refreshTokens: () => void;
+};

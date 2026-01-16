@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import type { Database } from "@/db";
 import { members, organizations } from "@/db/schema";
 import type { IOrganizationRepository, NewOrganization } from "../../domain/entity/organization";
@@ -32,4 +33,17 @@ export class OrganizationRepository implements IOrganizationRepository {
     return result
 
   }
+
+  getBySlug = async (slug: string) => {
+    return await this.db.query.organizations.findFirst({
+      where: eq(organizations.slug, slug)
+    })
+  };
+
+  getById = async (id: string) => {
+    return await this.db.query.organizations.findFirst({
+      where: eq(organizations.id, id)
+    })
+  };
+
 }

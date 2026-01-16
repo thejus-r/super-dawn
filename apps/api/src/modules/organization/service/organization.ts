@@ -15,21 +15,6 @@ export class OrganizationService {
     return await this.organizationRepository.createOrganization(userId, data)
   }
 
-  // TODO: Implement adding member
-  addMember = () => {
-
-  }
-
-  // TODO: Implement remove member
-  removeMember = () => {
-
-  }
-
-  // TODO: Implement change access-level of member
-  updateAccessForMember = () => {
-
-  }
-
   // TODO: Update organization name
   updateOrganizationName = () => {
     const userId = ""

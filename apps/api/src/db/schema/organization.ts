@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  index,
   pgEnum,
   pgTable,
   primaryKey,
@@ -14,7 +15,9 @@ export const organizations = pgTable("organization_table", {
   name: varchar("name", { length: 128 }).notNull(),
   slug: varchar("slug", { length: 28 }).unique().notNull(),
   ...defaultTimeStamps,
-});
+}, (table) => [
+  index("slug_idx").on(table.slug)
+]);
 
 export const roleEnum = pgEnum("role", ["su", "owner", "admin", "member"]);
 

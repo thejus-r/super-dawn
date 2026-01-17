@@ -10,8 +10,8 @@ const sideBarLink = [
     to: "/$orgSlug/property"
   },
   {
-    label: "Settings",
-    to: "/$orgSlug/settings"
+    label: "Account",
+    to: "/$orgSlug/account"
   }
 ] as const
 

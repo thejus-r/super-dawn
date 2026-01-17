@@ -4,7 +4,7 @@ type TextFieldProps = React.ComponentProps<"input"> & {
 
 export const TextField: React.FC<TextFieldProps> = ({ label, ...props }) => {
   return <label>
-    <span > {label}</span>
+    <span> {label}</span>
     <div>
       <input{...props} />
     </div>

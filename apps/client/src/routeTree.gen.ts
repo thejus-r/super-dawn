@@ -13,10 +13,10 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ProtectedCreateOrganizationRouteImport } from './routes/_protected/create-organization'
-import { Route as ProtectedOrgSlugRouteImport } from './routes/_protected/$orgSlug'
-import { Route as ProtectedOrgSlugIndexRouteImport } from './routes/_protected/$orgSlug/index'
-import { Route as ProtectedOrgSlugSettingsRouteImport } from './routes/_protected/$orgSlug/settings'
-import { Route as ProtectedOrgSlugPropertyRouteImport } from './routes/_protected/$orgSlug/property'
+import { Route as ProtectedScopeIdRouteImport } from './routes/_protected/$scopeId'
+import { Route as ProtectedScopeIdIndexRouteImport } from './routes/_protected/$scopeId/index'
+import { Route as ProtectedScopeIdPropertyRouteImport } from './routes/_protected/$scopeId/property'
+import { Route as ProtectedScopeIdAccountRouteImport } from './routes/_protected/$scopeId/account'
 
 const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
@@ -38,85 +38,84 @@ const ProtectedCreateOrganizationRoute =
     path: '/create-organization',
     getParentRoute: () => ProtectedRoute,
   } as any)
-const ProtectedOrgSlugRoute = ProtectedOrgSlugRouteImport.update({
-  id: '/$orgSlug',
-  path: '/$orgSlug',
+const ProtectedScopeIdRoute = ProtectedScopeIdRouteImport.update({
+  id: '/$scopeId',
+  path: '/$scopeId',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedOrgSlugIndexRoute = ProtectedOrgSlugIndexRouteImport.update({
+const ProtectedScopeIdIndexRoute = ProtectedScopeIdIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ProtectedOrgSlugRoute,
+  getParentRoute: () => ProtectedScopeIdRoute,
 } as any)
-const ProtectedOrgSlugSettingsRoute =
-  ProtectedOrgSlugSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => ProtectedOrgSlugRoute,
-  } as any)
-const ProtectedOrgSlugPropertyRoute =
-  ProtectedOrgSlugPropertyRouteImport.update({
+const ProtectedScopeIdPropertyRoute =
+  ProtectedScopeIdPropertyRouteImport.update({
     id: '/property',
     path: '/property',
-    getParentRoute: () => ProtectedOrgSlugRoute,
+    getParentRoute: () => ProtectedScopeIdRoute,
   } as any)
+const ProtectedScopeIdAccountRoute = ProtectedScopeIdAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => ProtectedScopeIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/$orgSlug': typeof ProtectedOrgSlugRouteWithChildren
+  '/$scopeId': typeof ProtectedScopeIdRouteWithChildren
   '/create-organization': typeof ProtectedCreateOrganizationRoute
   '/login': typeof PublicLoginRoute
   '/': typeof ProtectedIndexRoute
-  '/$orgSlug/property': typeof ProtectedOrgSlugPropertyRoute
-  '/$orgSlug/settings': typeof ProtectedOrgSlugSettingsRoute
-  '/$orgSlug/': typeof ProtectedOrgSlugIndexRoute
+  '/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
+  '/$scopeId/': typeof ProtectedScopeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/create-organization': typeof ProtectedCreateOrganizationRoute
   '/login': typeof PublicLoginRoute
   '/': typeof ProtectedIndexRoute
-  '/$orgSlug/property': typeof ProtectedOrgSlugPropertyRoute
-  '/$orgSlug/settings': typeof ProtectedOrgSlugSettingsRoute
-  '/$orgSlug': typeof ProtectedOrgSlugIndexRoute
+  '/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
+  '/$scopeId': typeof ProtectedScopeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteWithChildren
-  '/_protected/$orgSlug': typeof ProtectedOrgSlugRouteWithChildren
+  '/_protected/$scopeId': typeof ProtectedScopeIdRouteWithChildren
   '/_protected/create-organization': typeof ProtectedCreateOrganizationRoute
   '/_public/login': typeof PublicLoginRoute
   '/_protected/': typeof ProtectedIndexRoute
-  '/_protected/$orgSlug/property': typeof ProtectedOrgSlugPropertyRoute
-  '/_protected/$orgSlug/settings': typeof ProtectedOrgSlugSettingsRoute
-  '/_protected/$orgSlug/': typeof ProtectedOrgSlugIndexRoute
+  '/_protected/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/_protected/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
+  '/_protected/$scopeId/': typeof ProtectedScopeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/$orgSlug'
+    | '/$scopeId'
     | '/create-organization'
     | '/login'
     | '/'
-    | '/$orgSlug/property'
-    | '/$orgSlug/settings'
-    | '/$orgSlug/'
+    | '/$scopeId/account'
+    | '/$scopeId/property'
+    | '/$scopeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/create-organization'
     | '/login'
     | '/'
-    | '/$orgSlug/property'
-    | '/$orgSlug/settings'
-    | '/$orgSlug'
+    | '/$scopeId/account'
+    | '/$scopeId/property'
+    | '/$scopeId'
   id:
     | '__root__'
     | '/_protected'
-    | '/_protected/$orgSlug'
+    | '/_protected/$scopeId'
     | '/_protected/create-organization'
     | '/_public/login'
     | '/_protected/'
-    | '/_protected/$orgSlug/property'
-    | '/_protected/$orgSlug/settings'
-    | '/_protected/$orgSlug/'
+    | '/_protected/$scopeId/account'
+    | '/_protected/$scopeId/property'
+    | '/_protected/$scopeId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -154,60 +153,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCreateOrganizationRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/$orgSlug': {
-      id: '/_protected/$orgSlug'
-      path: '/$orgSlug'
-      fullPath: '/$orgSlug'
-      preLoaderRoute: typeof ProtectedOrgSlugRouteImport
+    '/_protected/$scopeId': {
+      id: '/_protected/$scopeId'
+      path: '/$scopeId'
+      fullPath: '/$scopeId'
+      preLoaderRoute: typeof ProtectedScopeIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/$orgSlug/': {
-      id: '/_protected/$orgSlug/'
+    '/_protected/$scopeId/': {
+      id: '/_protected/$scopeId/'
       path: '/'
-      fullPath: '/$orgSlug/'
-      preLoaderRoute: typeof ProtectedOrgSlugIndexRouteImport
-      parentRoute: typeof ProtectedOrgSlugRoute
+      fullPath: '/$scopeId/'
+      preLoaderRoute: typeof ProtectedScopeIdIndexRouteImport
+      parentRoute: typeof ProtectedScopeIdRoute
     }
-    '/_protected/$orgSlug/settings': {
-      id: '/_protected/$orgSlug/settings'
-      path: '/settings'
-      fullPath: '/$orgSlug/settings'
-      preLoaderRoute: typeof ProtectedOrgSlugSettingsRouteImport
-      parentRoute: typeof ProtectedOrgSlugRoute
-    }
-    '/_protected/$orgSlug/property': {
-      id: '/_protected/$orgSlug/property'
+    '/_protected/$scopeId/property': {
+      id: '/_protected/$scopeId/property'
       path: '/property'
-      fullPath: '/$orgSlug/property'
-      preLoaderRoute: typeof ProtectedOrgSlugPropertyRouteImport
-      parentRoute: typeof ProtectedOrgSlugRoute
+      fullPath: '/$scopeId/property'
+      preLoaderRoute: typeof ProtectedScopeIdPropertyRouteImport
+      parentRoute: typeof ProtectedScopeIdRoute
+    }
+    '/_protected/$scopeId/account': {
+      id: '/_protected/$scopeId/account'
+      path: '/account'
+      fullPath: '/$scopeId/account'
+      preLoaderRoute: typeof ProtectedScopeIdAccountRouteImport
+      parentRoute: typeof ProtectedScopeIdRoute
     }
   }
 }
 
-interface ProtectedOrgSlugRouteChildren {
-  ProtectedOrgSlugPropertyRoute: typeof ProtectedOrgSlugPropertyRoute
-  ProtectedOrgSlugSettingsRoute: typeof ProtectedOrgSlugSettingsRoute
-  ProtectedOrgSlugIndexRoute: typeof ProtectedOrgSlugIndexRoute
+interface ProtectedScopeIdRouteChildren {
+  ProtectedScopeIdAccountRoute: typeof ProtectedScopeIdAccountRoute
+  ProtectedScopeIdPropertyRoute: typeof ProtectedScopeIdPropertyRoute
+  ProtectedScopeIdIndexRoute: typeof ProtectedScopeIdIndexRoute
 }
 
-const ProtectedOrgSlugRouteChildren: ProtectedOrgSlugRouteChildren = {
-  ProtectedOrgSlugPropertyRoute: ProtectedOrgSlugPropertyRoute,
-  ProtectedOrgSlugSettingsRoute: ProtectedOrgSlugSettingsRoute,
-  ProtectedOrgSlugIndexRoute: ProtectedOrgSlugIndexRoute,
+const ProtectedScopeIdRouteChildren: ProtectedScopeIdRouteChildren = {
+  ProtectedScopeIdAccountRoute: ProtectedScopeIdAccountRoute,
+  ProtectedScopeIdPropertyRoute: ProtectedScopeIdPropertyRoute,
+  ProtectedScopeIdIndexRoute: ProtectedScopeIdIndexRoute,
 }
 
-const ProtectedOrgSlugRouteWithChildren =
-  ProtectedOrgSlugRoute._addFileChildren(ProtectedOrgSlugRouteChildren)
+const ProtectedScopeIdRouteWithChildren =
+  ProtectedScopeIdRoute._addFileChildren(ProtectedScopeIdRouteChildren)
 
 interface ProtectedRouteChildren {
-  ProtectedOrgSlugRoute: typeof ProtectedOrgSlugRouteWithChildren
+  ProtectedScopeIdRoute: typeof ProtectedScopeIdRouteWithChildren
   ProtectedCreateOrganizationRoute: typeof ProtectedCreateOrganizationRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedOrgSlugRoute: ProtectedOrgSlugRouteWithChildren,
+  ProtectedScopeIdRoute: ProtectedScopeIdRouteWithChildren,
   ProtectedCreateOrganizationRoute: ProtectedCreateOrganizationRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
 }

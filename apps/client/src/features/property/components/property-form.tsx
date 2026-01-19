@@ -1,5 +1,7 @@
 import { useAppForm } from "@/shared/components/Form/hooks/form";
 import { CreateProperty, createPropertyFormSchema } from "../utils/schema";
+import { Button } from "@/shared/ui/Button";
+import { Modal } from "@/shared/ui/Modal";
 
 type PropertyFormProps = {
   handleSubmit: (payload: CreateProperty) => void;
@@ -11,8 +13,8 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ handleSubmit }) => {
       name: "",
       ownerName: "",
       ownerContact: "",
-      monthlyRent: "",
-      securityDeposit: "",
+      monthlyRent: "0",
+      securityDeposit: "0",
     },
     validators: {
       onChange: createPropertyFormSchema,
@@ -49,15 +51,23 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({ handleSubmit }) => {
         name="securityDeposit"
         children={(field) => <field.TextField label="Security Deposit" />}
       />
-
-      <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitted]}
-        children={([canSubmit, isSubmitting]) => (
-          <button type="submit" disabled={!canSubmit}>
-            {isSubmitting ? "..." : "Submit"}
-          </button>
-        )}
-      />
+      <div className="flex gap-2 justify-end">
+        <Modal.Close
+          render={
+            <Button intent="ghost" type="submit">
+              Cancel
+            </Button>
+          }
+        />
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitted]}
+          children={([canSubmit, isSubmitting]) => (
+            <Button type="submit" disabled={!canSubmit}>
+              {isSubmitting ? "..." : "Submit"}
+            </Button>
+          )}
+        />
+      </div>
     </form>
   );
 };

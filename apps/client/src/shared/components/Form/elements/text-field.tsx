@@ -1,23 +1,66 @@
 import { useStore } from "@tanstack/react-form";
 import { useFieldContext } from "../hooks/form-context";
+import { cva, type VariantProps } from "class-variance-authority";
 
-export interface TextFieldProps extends React.ComponentProps<"input"> {
-  label: string;
-}
+const inputVariants = cva(
+  ["border", "rounded-lg", "h-9", "px-2", "bg-stone-100"],
+  {
+    variants: {
+      intent: {
+        default: [
+          "border-stone-200",
+          "focus:ring-neutral-900",
+          "focus:outline-2",
+          "focus:outline-stone-900",
+        ],
+        error: ["border-red-500", "focus:ring-red-200", "focus:border-red-500"],
+      },
+    },
 
-export const TextField: React.FC<TextFieldProps> = ({ label, ...props }) => {
+    defaultVariants: {
+      intent: "default",
+    },
+  },
+);
+
+const labelVariants = cva(["block", "text-xs", "transition-colors"], {
+  variants: {
+    intent: {
+      default: ["text-stone-500"],
+      error: ["text-red-500"],
+    },
+  },
+
+  defaultVariants: {
+    intent: "default",
+  },
+});
+
+type TextFieldProps = React.ComponentProps<"input"> &
+  VariantProps<typeof inputVariants> & {
+    label: string;
+  };
+
+export const TextField: React.FC<TextFieldProps> = ({
+  label,
+  intent,
+  ...props
+}) => {
   const field = useFieldContext<string>();
 
   const errors = useStore(field.store, (state) => state.meta.errors);
 
+  const hasError = errors.length > 0;
+  const currentIntent = hasError ? "error" : intent;
+
   return (
-    <div>
-      <label className="flex flex-col gap-1 mb-2">
-        <span className="block text-xs font-medium text-neutral-400">
+    <div className="h-20">
+      <label className="flex flex-col gap-1 mb-1">
+        <span className={labelVariants({ intent: currentIntent })}>
           {label}
         </span>
         <input
-          className="border px-1.5 border-neutral-200 h-8 focus:outline-none focus:ring-2 focus:ring-neutral-900"
+          className={inputVariants({ intent: currentIntent })}
           value={field.state.value}
           onChange={(e) => field.handleChange(e.target.value)}
           onBlur={field.handleBlur}

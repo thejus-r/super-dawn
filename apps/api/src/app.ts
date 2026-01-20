@@ -5,9 +5,14 @@ import { createIdentityModule } from "./modules/identity/interface/http";
 import { createOrganizationModule } from "./modules/organization/interface/http";
 import { appErrorHandler } from "./shared/middleware/errorHandler";
 import { createPropertyModule } from "./modules/property/interface/http";
+import { createMediaModule } from "./modules/media";
 
-export const buildApp = () => {
+export const buildApp = async () => {
   const container = createContainer();
+
+  // init message broker
+  await container.app.messageBroker.connect();
+  console.log("[buildApp]: infrastructure connected");
 
   const identityModule = createIdentityModule(
     container.identity.service.authService,
@@ -21,6 +26,12 @@ export const buildApp = () => {
     container.organization.service.organization,
   );
 
+  const mediaModule = await createMediaModule({
+    mediaRepository: container.media.repository,
+    messageBroker: container.app.messageBroker,
+    storageService: container.app.storageService,
+  });
+
   const app = new Elysia()
     .use(appErrorHandler)
     .group("/api", (app) =>
@@ -28,7 +39,8 @@ export const buildApp = () => {
         .use(healthModule)
         .use(identityModule)
         .use(organizationModule)
-        .use(propertyModule),
+        .use(propertyModule)
+        .use(mediaModule),
     )
     .get("/health", () => ({ status: "ok", timestamp: new Date() }))
     .listen(3000);

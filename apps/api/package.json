@@ -11,6 +11,7 @@
     "db:migrate": "bunx drizzle-kit migrate"
   },
   "dependencies": {
+    "@superdawn/core": "workspace:*",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "elysia": "^1.4.21",

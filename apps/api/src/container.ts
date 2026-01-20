@@ -6,10 +6,14 @@ import { MembershipRepository } from "./modules/identity/infrastructure/reposito
 import { SessionRepository } from "./modules/identity/infrastructure/repository/session.repository";
 import { AccessControlService } from "./modules/identity/services/access-control.service";
 import { AuthService } from "./modules/identity/services/auth.service";
+import { MediaRepository } from "./modules/media";
+import { ImageService } from "./modules/media/services/Image.service";
 import { OrganizationRepository } from "./modules/organization/infrastructure/repository/organization.repo";
 import { OrganizationService } from "./modules/organization/service/organization";
 import { PropertyRepository } from "./modules/property/infrastructure/property.repository";
 import { PropertyService } from "./modules/property/service/property.service";
+import { MinioStorage } from "@superdawn/core";
+import { RabbitMQBroker } from "@superdawn/core";
 
 export const createContainer = () => {
   // Repositories
@@ -17,7 +21,11 @@ export const createContainer = () => {
   const sessionRepo = new SessionRepository(db);
   const membershipRepo = new MembershipRepository(db);
   const organizationRepo = new OrganizationRepository(db);
+  const mediaRepository = new MediaRepository(db);
   const propertyRepo = new PropertyRepository(db);
+
+  const storageService = new MinioStorage();
+  const messageBroker = new RabbitMQBroker();
 
   // Shared Services
   const accessControlService = new AccessControlService(membershipRepo);
@@ -38,6 +46,13 @@ export const createContainer = () => {
     organizationRepo,
   );
   return {
+    app: {
+      messageBroker: messageBroker,
+      storageService: storageService,
+    },
+    media: {
+      repository: mediaRepository,
+    },
     organization: {
       service: {
         organization: organizationService,

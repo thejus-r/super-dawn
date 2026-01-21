@@ -1,6 +1,7 @@
 import { useCreateProperty } from "../hooks/use-create-property";
 import { Modal } from "@/shared/ui/Modal";
 import { CreateProperty } from "../utils/schema";
+// import { PropertyForm } from "./property-form";
 import { PropertyForm } from "./property-form";
 import { Button } from "@/shared/ui/Button";
 
@@ -18,7 +19,7 @@ export const AddProperty: React.FC = () => {
         title="Add new property"
         description="Fill the details to add new property"
       >
-        <PropertyForm handleSubmit={handleFormSubmit} />
+        <PropertyForm />
       </Modal.Content>
     </Modal.Root>
   );

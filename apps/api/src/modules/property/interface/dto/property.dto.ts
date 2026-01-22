@@ -6,6 +6,11 @@ export const createPropertySchema = z.object({
   ownerContact: z.string(),
   monthlyRent: z.string(),
   securityDeposit: z.string(),
+  images: z.array(
+    z.object({
+      id: z.string(),
+    }),
+  ),
 });
 
 export type CreatePropertyPayload = z.infer<typeof createPropertySchema>;

@@ -11,7 +11,7 @@ export type Media = InferSelectModel<typeof media>;
 export type NewMedia = InferInsertModel<typeof media>;
 
 export type NewPropertyWithImage = NewProperty & {
-  images: PropertyImage[];
+  images: Partial<PropertyImage>[];
 };
 
 export type PropertyWithImageRecord = Property & {
@@ -39,7 +39,7 @@ export type IPropertyService = {
     userId: string;
     orgId?: string;
     payload: CreatePropertyPayload;
-  }) => Promise<Property>;
+  }) => Promise<PropertyWithImageRecord>;
 
   list: ({ userId }: { userId: string }) => Promise<Property[]>;
 };

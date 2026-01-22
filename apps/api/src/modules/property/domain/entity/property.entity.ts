@@ -11,7 +11,9 @@ export type Media = InferSelectModel<typeof media>;
 export type NewMedia = InferInsertModel<typeof media>;
 
 export type NewPropertyWithImage = NewProperty & {
-  images: Partial<PropertyImage>[];
+  images: {
+    mediaId: string;
+  }[];
 };
 
 export type PropertyWithImageRecord = Property & {

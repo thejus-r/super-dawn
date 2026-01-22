@@ -5,14 +5,17 @@ import { Button } from "@/shared/ui/Button";
 import { useStore } from "@tanstack/react-form";
 import api from "@/shared/lib/api";
 import { X, Image, Book, Images } from "lucide-react";
+import { CreateProperty } from "../../utils/schema";
 
-type PropertyFormProps = {};
+type PropertyFormProps = {
+  handleSubmit: (value: CreateProperty) => void;
+};
 
-export const PropertyForm: React.FC<PropertyFormProps> = () => {
+export const PropertyForm: React.FC<PropertyFormProps> = ({ handleSubmit }) => {
   const form = useAppForm({
     ...propertyFormOpts,
     onSubmit: ({ value }) => {
-      alert(JSON.stringify(value, null, 2));
+      handleSubmit(value);
     },
   });
   return (
@@ -67,7 +70,7 @@ export const BasicFields = withForm({
       <div className="">
         <h3 className="font-semibold mb-2">Basic Details</h3>
         <form.AppField
-          name="propertyName"
+          name="name"
           children={(field) => <field.TextField label="Property Name" />}
         />
         <form.AppField
@@ -77,6 +80,18 @@ export const BasicFields = withForm({
         <form.AppField
           name="ownerContact"
           children={(field) => <field.TextField label="Owner Contact" />}
+        />
+        <form.AppField
+          name="monthlyRent"
+          children={(field) => (
+            <field.TextField label="Monthly Rent" type="number" />
+          )}
+        />
+        <form.AppField
+          name="securityDeposit"
+          children={(field) => (
+            <field.TextField label="Security Deposit" type="number" />
+          )}
         />
       </div>
     );

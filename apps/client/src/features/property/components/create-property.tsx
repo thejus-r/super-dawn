@@ -19,7 +19,7 @@ export const AddProperty: React.FC = () => {
         title="Add new property"
         description="Fill the details to add new property"
       >
-        <PropertyForm />
+        <PropertyForm handleSubmit={handleFormSubmit} />
       </Modal.Content>
     </Modal.Root>
   );

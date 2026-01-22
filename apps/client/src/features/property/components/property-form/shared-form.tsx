@@ -5,17 +5,21 @@ type Image = {
 };
 
 type PropertyFormValue = {
-  propertyName: string;
+  name: string;
   ownerName: string;
   ownerContact: string;
+  monthlyRent: string;
+  securityDeposit: string;
   imagesToUpload: File[] | null;
   images: Image[];
 };
 
 const defaultValues: PropertyFormValue = {
-  propertyName: "",
+  name: "",
   ownerName: "",
   ownerContact: "",
+  monthlyRent: "0",
+  securityDeposit: "0",
   imagesToUpload: null,
   images: [],
 };

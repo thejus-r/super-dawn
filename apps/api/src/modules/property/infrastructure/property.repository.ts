@@ -10,36 +10,48 @@ export class PropertyRepository implements IPropertyRepository {
   constructor(private readonly db: Database) {}
 
   create = async (payload: NewPropertyWithImage) => {
-    const newProperty = await this.db.transaction(async (tx) => {
-      const [createdProperty] = await tx
-        .insert(properties)
-        .values({
-          ...payload,
-        })
-        .returning();
+    try {
+      const newProperty = await this.db.transaction(async (tx) => {
+        const [createdProperty] = await tx
+          .insert(properties)
+          .values({
+            ...payload,
+          })
+          .returning();
 
-      if (!createdProperty) {
-        tx.rollback();
-        throw new Error("unable to create property");
+        if (!createdProperty) {
+          tx.rollback();
+          throw new Error("unable to create property");
+        }
+
+        const imageInserts = payload.images.map((image) => ({
+          mediaId: image.mediaId,
+          propertyId: createdProperty.id,
+        }));
+
+        if (imageInserts.length > 0) {
+          const createdImages = await tx
+            .insert(propertyImages)
+            .values([...imageInserts])
+            .returning();
+
+          return {
+            ...createdProperty,
+            images: createdImages,
+          };
+        }
+
+        return { ...createdProperty, images: [] };
+      });
+
+      if (!newProperty) {
+        throw new Error("unable to create new property");
       }
-
-      const imageInserts = payload.images.map((image) => ({
-        mediaId: image.mediaId,
-        propertyId: createdProperty.id,
-      }));
-
-      const createdImages = await tx
-        .insert(propertyImages)
-        .values(imageInserts)
-        .returning();
-
-      return { ...createdProperty, images: createdImages };
-    });
-
-    if (!newProperty) {
-      throw new Error("unable to create new property");
+      return newProperty;
+    } catch (err) {
+      console.error(err);
+      throw new Error("error");
     }
-    return newProperty;
   };
 
   listAll = async (userId: string) => {

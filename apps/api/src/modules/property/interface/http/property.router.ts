@@ -16,20 +16,22 @@ export const createPropertyRouter = ({
     .use(authMiddleware(tokenProvider))
     .post(
       "/",
-      ({ user, body }) => {
+      async ({ user, body }) => {
         if (!user) {
           throw new AppError({
             message: "unauthorized",
             statusCode: 403,
           });
         }
-        propertyService.create({
+        const res = await propertyService.create({
           userId: user.userId,
           orgId: undefined,
           payload: {
             ...body,
           },
         });
+
+        return res;
       },
       {
         body: createPropertySchema,

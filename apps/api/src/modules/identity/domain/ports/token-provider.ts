@@ -17,7 +17,7 @@ export type RefreshTokenValidationStatus = typeof RefreshTokenValidationResult[k
 
 export interface ITokenProvider {
   generateAccessToken: (payload: AccessTokenPayload) => Promise<string>
-  verifyAccessToken: (token: string) => Promise<AccessTokenPayload | null>
+  verifyAccessToken: (token: string) => Promise<AccessTokenPayload>
   generateRefreshToken: () => Promise<{ token: string, hashedToken: string }>
   validateRefreshToken: (incomingHashedToken: string, exisitingRecord: Session) => Promise<RefreshTokenValidationStatus>
   hashToken: (input: string) => string

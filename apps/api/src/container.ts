@@ -1,3 +1,4 @@
+import { MinioStorage, RabbitMQBroker } from "@superdawn/core";
 import { db } from "./db";
 import { IdentityOrganizationAdapter } from "./infrastructure/adapters/identity-organization.adapter";
 import { OrganizationPropertyAdapter } from "./infrastructure/adapters/organization-property.adapter";
@@ -7,13 +8,10 @@ import { SessionRepository } from "./modules/identity/infrastructure/repository/
 import { AccessControlService } from "./modules/identity/services/access-control.service";
 import { AuthService } from "./modules/identity/services/auth.service";
 import { MediaRepository } from "./modules/media";
-import { ImageService } from "./modules/media/services/Image.service";
 import { OrganizationRepository } from "./modules/organization/infrastructure/repository/organization.repo";
 import { OrganizationService } from "./modules/organization/service/organization";
 import { PropertyRepository } from "./modules/property/infrastructure/property.repository";
 import { PropertyService } from "./modules/property/service/property.service";
-import { MinioStorage } from "@superdawn/core";
-import { RabbitMQBroker } from "@superdawn/core";
 
 export const createContainer = () => {
   // Repositories

@@ -1,6 +1,7 @@
 import type {
   IPropertyRepository,
   IPropertyService,
+  PropertyQueryOptions,
 } from "../domain/entity/property.entity";
 import type { IOrganizationGateway } from "../domain/ports/organization.gateway";
 import type { CreatePropertyPayload } from "../interface/dto/property.dto";
@@ -10,6 +11,10 @@ export class PropertyService implements IPropertyService {
     private readonly orgGateway: IOrganizationGateway,
     private readonly propertyRepo: IPropertyRepository,
   ) {}
+
+  getById = async ({ propertyId }: { propertyId: string }) => {
+    return this.propertyRepo.getById({ propertyId });
+  };
 
   create = async ({
     userId,
@@ -91,7 +96,43 @@ export class PropertyService implements IPropertyService {
     };
   };
 
-  list = async ({ userId }: { userId: string }) => {
-    return await this.propertyRepo.listAll(userId);
+  list = async ({
+    userId,
+    organizationId,
+    options
+  }: {
+    userId: string,
+    organizationId?: string,
+    options: PropertyQueryOptions
+  }) => {
+
+    const finalFilter = {
+      ...options.filters
+    }
+
+
+    if (organizationId) {
+      // const can = await this.permissionChecker.can(userId, organizationId, "READ")
+      // if (!can) {
+      //   throw new AppError({
+      //     message: 'requires elevated permission',
+      //     statusCode: 403
+      //   })
+      // }
+      finalFilter.organizationId = organizationId
+    } else {
+      finalFilter.organizationId = null
+      finalFilter.authorId = userId
+    }
+
+      return await this.propertyRepo.listAll({
+        ...options,
+        filters: finalFilter
+      })
+  };
+
+  delete = async ({ propertyId }: { propertyId: string }) => {
+    console.log("service", "deleting ", propertyId);
+    await this.propertyRepo.delete(propertyId);
   };
 }

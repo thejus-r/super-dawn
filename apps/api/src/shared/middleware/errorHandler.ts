@@ -7,8 +7,10 @@ export const appErrorHandler = () =>
       AppError,
     })
     .onError(({ code, error, set }) => {
+      console.error(error)
       if (error instanceof AppError) {
         set.status = error.statusCode;
+
         return Response.json({
           success: false,
           message: error.message,

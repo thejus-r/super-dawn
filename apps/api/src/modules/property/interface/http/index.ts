@@ -1,10 +1,15 @@
 import Elysia from "elysia";
 import type { IPropertyService } from "../../domain/entity/property.entity";
+import type { IPermissionPort } from "../../domain/ports/permissions.port";
 import { createPropertyRouter } from "./property.router";
 
-export const createPropertyModule = (propertyService: IPropertyService) => {
+type PropertyModuleConfig = {
+  propertyService: IPropertyService,
+}
+
+export const createPropertyModule = (config: PropertyModuleConfig) => {
   const propertyRouter = createPropertyRouter({
-    propertyService
+    propertyService: config.propertyService
   })
 
   return new Elysia({ prefix: "/property" })

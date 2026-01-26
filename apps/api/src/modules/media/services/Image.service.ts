@@ -1,9 +1,10 @@
 import type {
   IMessageBroker,
-  IStorageService,
   ImageResultEvent,
+  IStorageService,
 } from "@superdawn/core";
 import { Image } from "@superdawn/core";
+import { AppError } from "@/shared/utils/AppError";
 import type { IMediaRepository } from "../domain/repository/IMediaRepository";
 
 export interface UploadRequestDTO {
@@ -20,10 +21,11 @@ export class ImageService {
   ) {}
 
   /**
-   * Uploads the original image to storage and calls,
-   * image worker via message broker to optimize the image greedly
-   */
+  * Uploads the original image to storage and calls,
+  * image worker via message broker to optimize the image greedly
+  */
   uploadImage = async (request: UploadRequestDTO) => {
+
     const newMedia = await this.mediaRepo.save({
       originalName: request.filename,
       mimeType: request.mimeType,
@@ -38,7 +40,7 @@ export class ImageService {
 
     console.log(`starting upload workflow for ${image.id}`);
 
-    const storageKey = `orignials/${image.id}-${image.filename}`;
+    const storageKey = `originals/${image.id}`;
 
     // store in blob storage
     await this.storage.upload(storageKey, request.file, image.mimeType);
@@ -53,15 +55,29 @@ export class ImageService {
     return {
       success: true,
       id: image.id,
+      key:storageKey,
       status: "pending",
     };
   };
 
   handleProcessingResult = async (event: ImageResultEvent) => {
     const { imageId, variants } = event;
-    console.log(`[media-module] recived processed images for: ${imageId}`);
+    console.log(`[media-module] received processed images for: ${imageId}`);
     await this.mediaRepo.update(imageId, {
       variants: variants,
     });
   };
+
+  getImage = async (key: string) => {
+
+    try {
+      return await this.storage.download(key)
+    } catch (error) {
+      console.error(`Failed to fetch image: ${key}`, error);
+      throw new AppError({
+        message: 'image not found',
+        statusCode: 404
+      })
+    }
+  }
 }

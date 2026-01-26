@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/lib/api";
 import type { CreateProperty } from "../utils/schema";
 
-export function useCreateProperty() {
+export function useUpdateProperty() {
 	const queryClient = useQueryClient();
-	return useMutation({
-		mutationFn: async (payload: CreateProperty) => {
-			const response = await api.apiClient.post("property", payload);
+  return useMutation({
+    mutationFn: async ({ id, payload }: { id: string; payload: CreateProperty }) => {
+			const response = await api.apiClient.patch(`/property/${id}`, payload);
 			return response.data;
 		},
 

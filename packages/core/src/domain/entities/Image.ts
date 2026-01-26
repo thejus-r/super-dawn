@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
+
 export class Image {
+  public readonly key: string
   constructor(
-    public readonly id: string,
     public readonly filename: string,
     public readonly mimeType: string,
     public readonly size: number,
@@ -14,5 +16,7 @@ export class Image {
     if (!allowedTypes.includes(mimeType)) {
       throw new Error("invalid mimetype");
     }
+
+    this.key = `${randomUUID()}-${encodeURI(this.filename)}`
   }
 }

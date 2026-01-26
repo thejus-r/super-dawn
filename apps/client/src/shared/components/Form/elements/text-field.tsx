@@ -1,6 +1,6 @@
 import { useStore } from "@tanstack/react-form";
-import { useFieldContext } from "../hooks/form-context";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useFieldContext } from "../hooks/form-context";
 
 const inputVariants = cva(
   ["border", "rounded-lg", "h-9", "px-2", "bg-stone-100"],
@@ -69,7 +69,7 @@ export const TextField: React.FC<TextFieldProps> = ({
       </label>
       <div>
         {errors.map((error) => (
-          <div className="text-xs text-red-500">{error.message}</div>
+          <div key={error} className="text-xs text-red-500">{error.message}</div>
         ))}
       </div>
     </div>

@@ -6,13 +6,13 @@ import type { IPropertyService } from "../../domain/entity/property.entity";
 import { createPropertySchema } from "../dto/property.dto";
 
 /**
- * Middleware validates the propertyId, it exists, and adds to context,
- * If not found, we can return early, from these end points
- */
+* Middleware validates the propertyId, it exists, and adds to context,
+* If not found, we can return early, from these end points
+*/
 
 type PropertyRouterConfig = {
-   propertyService: IPropertyService;
- }
+  propertyService: IPropertyService;
+}
 
 export const createPropertyRouter = (config: PropertyRouterConfig) => {
   const { propertyService } = config
@@ -86,6 +86,13 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
             message: "success",
             statusCode: 204,
           };
-        }),
+        })
+        .patch("/", async ({ property, body }) => {
+          await propertyService.update({ propertyId: property.id, payload: body  })
+
+        }, {
+          body: createPropertySchema,
+        })
+
     );
 };

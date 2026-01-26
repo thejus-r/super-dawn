@@ -114,7 +114,7 @@ export class PropertyRepository implements IPropertyRepository {
     await this.db.transaction(async (tx) => {
       await tx.update(properties).set({
         ...payload,
-      });
+      }).where(eq(properties.id, id));
 
       const existingImages = await tx.query.propertyImages.findMany({
         where: eq(propertyImages.propertyId, id),
@@ -153,17 +153,6 @@ export class PropertyRepository implements IPropertyRepository {
         );
       }
     });
-
-    const [updatedProperty] = await this.db
-      .update(properties)
-      .set({
-        ...payload,
-      })
-      .returning();
-
-    if (!updatedProperty) {
-      throw new Error("unable to update property");
-    }
   };
 
   delete = async (propertyId: string): Promise<void> => {

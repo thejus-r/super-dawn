@@ -2,9 +2,10 @@ import { formOptions } from "@tanstack/react-form";
 
 type Image = {
   id: string;
+  previewURL?: string
 };
 
-type PropertyFormValue = {
+export type PropertyFormValue = {
   name: string;
   ownerName: string;
   ownerContact: string;

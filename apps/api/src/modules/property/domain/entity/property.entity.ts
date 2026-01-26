@@ -87,4 +87,5 @@ export type IPropertyService = {
   }) => Promise<PropertyWithImage | null>;
 
   delete: ({ propertyId }: { propertyId: string }) => Promise<void>;
+  update: ({ propertyId, payload }: { propertyId: string, payload: CreatePropertyPayload }) => Promise<void>;
 };

@@ -26,35 +26,39 @@ export class ImageService {
   */
   uploadImage = async (request: UploadRequestDTO) => {
 
-    const newMedia = await this.mediaRepo.save({
-      originalName: request.filename,
-      mimeType: request.mimeType,
-    });
-
+    // We create image object, base check in class size and mime-type
     const image = new Image(
-      newMedia.id,
       request.filename,
       request.mimeType,
       request.file.length,
     );
 
-    console.log(`starting upload workflow for ${image.id}`);
+    // We store original files in subfolder "originals" in image bucket
+    const storageKey = `originals/${image.key}`;
 
-    const storageKey = `originals/${image.id}`;
+    const { id: imageId } = await this.mediaRepo.save({
+      key: storageKey,
+      originalName: request.filename,
+      mimeType: request.mimeType,
+    });
+
+
+    console.log(`starting upload workflow for ${imageId}`);
+
 
     // store in blob storage
     await this.storage.upload(storageKey, request.file, image.mimeType);
 
     // dispatch event to worker
     await this.broker.publish("image_processing_queue", {
-      imageId: image.id,
+      imageId: imageId,
       storageKey: storageKey,
       bucket: "images",
     });
 
     return {
       success: true,
-      id: image.id,
+      id: imageId,
       key:storageKey,
       status: "pending",
     };

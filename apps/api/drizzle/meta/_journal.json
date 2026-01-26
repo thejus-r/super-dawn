@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768469184228,
-      "tag": "0000_hesitant_skaar",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768563377463,
-      "tag": "0001_silly_plazm",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768909075027,
-      "tag": "0002_dark_hellfire_club",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1769071054829,
-      "tag": "0003_public_raider",
+      "when": 1769452795519,
+      "tag": "0000_parched_leopardon",
       "breakpoints": true
     }
   ]

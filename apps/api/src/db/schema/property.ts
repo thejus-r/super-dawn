@@ -1,9 +1,15 @@
 import { relations } from "drizzle-orm";
-import { numeric, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  numeric,
+  pgTable,
+  primaryKey,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { defaultTimeStamps } from "./helper";
 import { users } from "./identity";
-import { organizations } from "./organization";
 import { media } from "./media";
+import { organizations } from "./organization";
 
 export const properties = pgTable("property_table", {
   id: uuid("_id").primaryKey().defaultRandom(),
@@ -19,14 +25,18 @@ export const properties = pgTable("property_table", {
   ...defaultTimeStamps,
 });
 
-export const propertyImages = pgTable("property_images_table", {
-  propertyId: uuid("property_id")
-    .references(() => properties.id)
-    .notNull(),
-  mediaId: uuid("media_id")
-    .references(() => media.id)
-    .notNull(),
-});
+export const propertyImages = pgTable(
+  "property_images_table",
+  {
+    propertyId: uuid("property_id")
+      .references(() => properties.id)
+      .notNull(),
+    mediaId: uuid("media_id")
+      .references(() => media.id)
+      .notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.mediaId, t.propertyId] })],
+);
 
 export const propertyImageRelations = relations(propertyImages, ({ one }) => ({
   property: one(properties, {

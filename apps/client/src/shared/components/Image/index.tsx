@@ -3,11 +3,13 @@ import { useLayoutEffect } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import api from "@/shared/lib/api";
+import styles from "./index.module.css"
 
 type ProtectedImage = {
   id: string;
   originalName: string;
-  mineType: string;
+  key: string;
+  mimeType: string;
   variants: {
     key: string;
     resolution: ImageSize;
@@ -60,13 +62,13 @@ const useContainerWidth = <T extends HTMLElement>(
     observer.observe(ref.current)
 
     return () => observer.disconnect();
-  });
+  }, []);
 
   return width
 };
 
 const fetchImageBlob = async (key: string) => {
-  const response = await api.apiClient.get<Blob>(`api/media/image/${key}`, {
+  const response = await api.apiClient.get<Blob>(`/media/image/${key}`, {
     responseType: "blob"
   })
 
@@ -74,27 +76,36 @@ const fetchImageBlob = async (key: string) => {
 }
 
 type ProtectedImageProps = {
-  image: ProtectedImage
+  image: ProtectedImage,
+  alt?: string
 }
 export const ProtectedImage: React.FC<ProtectedImageProps> = (props) => {
-  const { image } = props
+  const { image, alt } = props
 
   const containerRef = useRef<HTMLDivElement>(null)
   const width = useContainerWidth(containerRef)
 
   const size: ImageSize = getSize(width)
 
-  const variant = image.variants.find(variant => variant.resolution === size)
+  const variant = image.variants.find((v) => v.resolution === size);
 
-  const { data } = useQuery({
+  const activeKey = variant ? variant.key : image.key;
+
+  const { data: blob } = useQuery({
     queryFn: async () => {
-      return fetchImageBlob()
+      return fetchImageBlob(activeKey)
     },
-    queryKey: [
-      "iamge"
-    ]
-
+    enabled: !!activeKey,
+    queryKey: ["media", "protected-image", activeKey],
+    staleTime: Infinity,
   })
 
-  return <div ref={containerRef}></div>
+  const objectUrl = useBlobUrl(blob);
+
+
+  return <div ref={containerRef}>
+    {objectUrl &&
+      <img className={styles.Image} src={objectUrl} alt={ alt || image.originalName } />
+    }
+  </div>
 }

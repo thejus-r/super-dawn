@@ -1,6 +1,5 @@
-import { RabbitMQBroker } from "@superdawn/core";
-import { MinioStorage } from "@superdawn/core";
 import type { ImageProcessingEvent } from "@superdawn/core";
+import { MinioStorage, RabbitMQBroker } from "@superdawn/core";
 import { ProcesImageUseCase } from "./application/ProcessImageUseCase";
 
 async function startWorker() {

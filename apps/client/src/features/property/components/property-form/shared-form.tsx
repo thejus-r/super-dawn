@@ -1,9 +1,25 @@
 import { formOptions } from "@tanstack/react-form";
 
-type Image = {
+type AddedImage = {
   id: string;
-  previewURL?: string
-};
+  previewURL: string;
+}
+
+type ImageFromServer = {
+  id: string;
+  originalName: string;
+  key: string;
+  mimeType: string;
+  variants: {
+    key: string;
+    resolution: "thumb" | "medium" | "large"
+  }[];
+  createdAt: string;
+  updatedAt: string;
+
+}
+
+export type Image = AddedImage | ImageFromServer
 
 export type PropertyFormValue = {
   name: string;

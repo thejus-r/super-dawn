@@ -125,10 +125,18 @@ export class PropertyService implements IPropertyService {
       finalFilter.authorId = userId
     }
 
-      return await this.propertyRepo.listAll({
+      const properties =  await this.propertyRepo.listAll({
         ...options,
         filters: finalFilter
       })
+
+
+    return properties.map(property => {
+      return {
+        ...property,
+        images: property.images.map(image => image.image)
+      }
+    })
   };
 
   delete = async ({ propertyId }: { propertyId: string }) => {

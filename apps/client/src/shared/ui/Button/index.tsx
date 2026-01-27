@@ -1,41 +1,34 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import styles from "./index.module.css"
 
 const buttonVariants = cva(
-  ["focus:outline-none", "tracking-wide", "transition-all"],
+  styles.Base,
   {
     variants: {
       intent: {
-        primary: [
-          "bg-black",
-          "text-white",
-          "hover:bg-stone-800",
-          "hover:outline-3",
-          "outline-stone-300",
-          "focus:ring-2",
-          "ring-offset-1",
-          "ring-stone-400",
-        ],
-        ghost: ["bg-none", "text-stone-900", "hover:bg-stone-200"],
+        primary: styles.Primary,
+        ghost: styles.Ghost,
+        danger: styles.Danger
       },
       size: {
-        medium: ["rounded-lg", "text-sm", "px-2.5", "py-1.5", "min-w-20"],
+        regular: styles.Regular,
       },
       disabled: {
-        false: null,
-        true: ["opacity-50", "cursor-not-allowed"],
+        false: styles.enabled,
+        true: styles.disabled,
       },
     },
     defaultVariants: {
       intent: "primary",
       disabled: false,
-      size: "medium",
+      size: "regular",
     },
   },
 );
 
 type ButtonProps = React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {};
+VariantProps<typeof buttonVariants> & {};
 
 export const Button: React.FC<ButtonProps> = ({
   intent,
@@ -44,8 +37,8 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={twMerge(buttonVariants({ intent }), className)}
-      {...props}
+    className={twMerge(buttonVariants({ intent }), className)}
+    {...props}
     />
   );
 };

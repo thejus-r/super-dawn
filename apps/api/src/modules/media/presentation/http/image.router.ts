@@ -3,10 +3,12 @@ import type { ImageService } from "../../services/Image.service";
 
 export const registerImageRoutes = (imageService: ImageService) => {
   return new Elysia({ prefix: "image" })
-    .get("/", () => {
-      return {
-        test: "ok",
-      };
+    .get("/*", async ({ params, set }) => {
+
+      console.log("image req", params["*"])
+      const { buffer, mimeType } = await imageService.getImage(params["*"]);
+      set.headers["content-type"] = mimeType
+      return buffer
     })
     .post(
       "/",

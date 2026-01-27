@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
 import type { Database } from "@/db";
+import { media } from "@/db/schema";
 import type { NewMedia } from "../../domain/entities/MediaEntity";
 import type { IMediaRepository } from "../../domain/repository/IMediaRepository";
-import { media } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 export class MediaRepository implements IMediaRepository {
   constructor(private readonly db: Database) {}
@@ -57,6 +57,7 @@ export class MediaRepository implements IMediaRepository {
         originalName: data.originalName,
         variants: data.variants,
       })
+      .where(eq(media.id, id))
       .returning();
 
     if (!updatedMedia) {

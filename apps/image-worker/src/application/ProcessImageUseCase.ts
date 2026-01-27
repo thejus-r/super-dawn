@@ -1,6 +1,5 @@
+import type { IMessageBroker, IStorageService } from "@superdawn/core";
 import sharp from "sharp";
-import { IStorageService } from "@superdawn/core";
-import { IMessageBroker } from "@superdawn/core";
 
 export interface ProcessImageDTO {
   imageId: string;
@@ -14,9 +13,9 @@ export class ProcesImageUseCase {
   ) {}
 
   execute = async (data: ProcessImageDTO): Promise<void> => {
-    console.log(`processing image: ${data.imageId}`);
+    console.log(`Worker received Image ID: ${data.imageId} with Key: ${data.storageKey}`);
 
-    const originalBuffer = await this.storage.download(data.storageKey);
+    const { buffer } = await this.storage.download(data.storageKey);
 
     const resolutions = [
       { name: "thumb", width: 100 },
@@ -24,29 +23,25 @@ export class ProcesImageUseCase {
       { name: "large", width: 1024 },
     ];
 
-    const results: unknown[] = [];
 
-    for (const res of resolutions) {
-      const resizedBuffer = await sharp(originalBuffer)
+    const variants = await Promise.all(resolutions.map(async (res) => {
+      const resizedBuffer = await sharp(buffer)
         .resize({ width: res.width })
         .toBuffer();
 
       const newKey = `processed/${data.imageId}-${res.name}.jpg`;
-
       await this.storage.upload(newKey, resizedBuffer, "image/jpeg");
 
-      results.push({
-        resolution: res.name,
-        key: newKey,
-      });
+      return { resolution: res.name, key: newKey }
+    }))
 
-      console.log(`generated ${res.name}`);
-    }
+    console.log(`[Worker] ${data.imageId}, ${JSON.stringify(variants)}`)
+
 
     await this.broker.publish("image_results_queue", {
       imageId: data.imageId,
       status: "completed",
-      variants: results,
+      variants: variants,
     });
   };
 }

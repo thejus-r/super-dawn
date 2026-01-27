@@ -1,14 +1,14 @@
-import type { IMessageBroker } from "../../domain/services/IMessageBroker";
 import client, {
-  type ChannelModel,
   type Channel,
+  type ChannelModel,
   type ConsumeMessage,
 } from "amqplib";
+import type { IMessageBroker } from "../../domain/services/IMessageBroker";
 
 export class RabbitMQBroker implements IMessageBroker {
   private connection: ChannelModel | null = null;
   private channel: Channel | null = null;
-  private isConnected: Boolean = false;
+  private isConnected = false;
 
   constructor(
     private readonly uri: string = "amqp://guest:guest@localhost:5672",

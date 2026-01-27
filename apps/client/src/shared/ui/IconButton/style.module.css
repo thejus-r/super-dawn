@@ -1,0 +1,46 @@
+.base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.primary {
+    color: var(--color-stone-800);
+    background-color: var(--color-stone-100);
+}
+
+.danger {
+    color: var(--color-red-500);
+    background-color: var(--color-red-50);
+}
+
+.primary.enabled:focus {
+    outline: 1.5px solid var(--color-stone-900);
+}
+
+.danger.enabled:focus {
+    outline: 1.5px solid var(--color-red-500);
+}
+
+.primary.enabled:hover {
+  background-color: var(--color-stone-200);
+}
+
+.danger.enabled:hover {
+  background-color: var(--color-red-100);
+}
+
+.regular {
+    height: 28px;
+    width: 28px;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    padding: 0.25rem 0.25rem;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import PropertyTable from "@/features/property/components/property-table";
 import { AddProperty } from "@/features/property/components/create-property";
+import PropertyTable from "@/features/property/components/property-table";
 
 export const Route = createFileRoute("/_protected/$scopeId/property")({
   component: RouteComponent,
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_protected/$scopeId/property")({
 
 function RouteComponent() {
   return (
-    <div>
+    <div className="w-full">
       <h3 className="text-xl font-medium">List of properties</h3>
       <AddProperty />
       <PropertyTable />

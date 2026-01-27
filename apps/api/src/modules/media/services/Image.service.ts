@@ -1,9 +1,10 @@
 import type {
   IMessageBroker,
-  IStorageService,
   ImageResultEvent,
+  IStorageService,
 } from "@superdawn/core";
 import { Image } from "@superdawn/core";
+import { AppError } from "@/shared/utils/AppError";
 import type { IMediaRepository } from "../domain/repository/IMediaRepository";
 
 export interface UploadRequestDTO {
@@ -20,48 +21,67 @@ export class ImageService {
   ) {}
 
   /**
-   * Uploads the original image to storage and calls,
-   * image worker via message broker to optimize the image greedly
-   */
+  * Uploads the original image to storage and calls,
+  * image worker via message broker to optimize the image greedly
+  */
   uploadImage = async (request: UploadRequestDTO) => {
-    const newMedia = await this.mediaRepo.save({
-      originalName: request.filename,
-      mimeType: request.mimeType,
-    });
 
+    // We create image object, base check in class size and mime-type
     const image = new Image(
-      newMedia.id,
       request.filename,
       request.mimeType,
       request.file.length,
     );
 
-    console.log(`starting upload workflow for ${image.id}`);
+    // We store original files in subfolder "originals" in image bucket
+    const storageKey = `originals/${image.key}`;
 
-    const storageKey = `orignials/${image.id}-${image.filename}`;
+    const { id: imageId } = await this.mediaRepo.save({
+      key: storageKey,
+      originalName: request.filename,
+      mimeType: request.mimeType,
+    });
+
+
+    console.log(`starting upload workflow for ${imageId}`);
+
 
     // store in blob storage
     await this.storage.upload(storageKey, request.file, image.mimeType);
 
     // dispatch event to worker
     await this.broker.publish("image_processing_queue", {
-      imageId: image.id,
+      imageId: imageId,
       storageKey: storageKey,
       bucket: "images",
     });
 
     return {
       success: true,
-      id: image.id,
+      id: imageId,
+      key:storageKey,
       status: "pending",
     };
   };
 
   handleProcessingResult = async (event: ImageResultEvent) => {
     const { imageId, variants } = event;
-    console.log(`[media-module] recived processed images for: ${imageId}`);
+    console.log(`[media-module] received processed images for: ${imageId}`);
     await this.mediaRepo.update(imageId, {
       variants: variants,
     });
   };
+
+  getImage = async (key: string) => {
+
+    try {
+      return await this.storage.download(key)
+    } catch (error) {
+      console.error(`Failed to fetch image: ${key}`, error);
+      throw new AppError({
+        message: 'image not found',
+        statusCode: 404
+      })
+    }
+  }
 }

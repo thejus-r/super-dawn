@@ -1,0 +1,62 @@
+.Base {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.Primary {
+    color: var(--color-stone-100);
+    background-color: var(--color-stone-900);
+}
+
+.Primary.enabled:focus {
+    outline: 2px solid var(--color-stone-800);
+    outline-offset: 2px;
+}
+
+.Primary.enabled:hover {
+    outline: 4px solid var(--color-stone-300);
+}
+
+.Ghost {
+    color: var(--color-stone-900);
+    background-color: var(--color-stone-100);
+}
+
+.Ghost.enabled:focus {
+    outline: 2px solid var(--color-stone-800);
+    outline-offset: 2px;
+}
+
+.Ghost.enabled:hover {
+    background-color: var(--color-stone-200);
+}
+
+.Danger {
+    color: var(--color-white);
+    background-color: var(--color-red-500);
+}
+
+.Danger.enabled:focus {
+    outline: 2px solid rgba(255, 0, 0, 1);
+    outline-offset: 2px;
+}
+
+.Danger.enabled:hover {
+    outline: 2px solid rgba(255, 0, 0, 0.4);
+    outline-offset: 0px;
+    background-color: var(--color-red-600);
+}
+
+.Regular {
+    font-size: var(--text);
+    min-width: 64px;
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-lg);
+}
+
+.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

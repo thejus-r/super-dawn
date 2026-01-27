@@ -1,100 +1,98 @@
-import { Trash, Pencil } from "lucide-react";
-import { usePropertyList, Property } from "../hooks/use-property-list";
 import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
+	createColumnHelper,
+	flexRender,
+	getCoreRowModel,
+	useReactTable,
 } from "@tanstack/react-table";
+import { usePropertyList } from "../hooks/use-property-list";
+import type { Property } from "../utils/types";
+import { DeletePropertyButton } from "./delete-property-button";
+import { EditPropertyButton } from "./edit-property-button";
 
 const columnHelper = createColumnHelper<Property>();
 
 const columns = [
-  columnHelper.accessor("name", {
-    header: () => <span>Name</span>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("ownerName", {
-    header: () => <span>Owner Name</span>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("ownerContact", {
-    header: () => <span>Owner Contact</span>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("monthlyRent", {
-    header: () => <span>Monthly Rent</span>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("securityDeposit", {
-    header: () => <span>Security Deposit</span>,
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: () => <span>Actions</span>,
-    cell: (props) => (
-      <div className="flex space-x-2">
-        <button className="w-7 h-7 hover:outline outline-stone-300 bg-stone-100 rounded-lg fill-stone-200 flex items-center justify-center">
-          <Pencil className="text-stone-800" size={16} />
-        </button>
-        <button className="w-7 h-7 bg-stone-100 rounded-lg fill-stone-200 flex items-center justify-center">
-          <Trash size={16} />
-        </button>
-      </div>
-    ),
-  }),
+	columnHelper.accessor("name", {
+		header: () => <span>Name</span>,
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.accessor("ownerName", {
+		header: () => <span>Owner Name</span>,
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.accessor("ownerContact", {
+		header: () => <span>Owner Contact</span>,
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.accessor("monthlyRent", {
+		header: () => <span>Monthly Rent</span>,
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.accessor("securityDeposit", {
+		header: () => <span>Security Deposit</span>,
+		cell: (info) => info.getValue(),
+	}),
+	columnHelper.display({
+		id: "actions",
+		header: () => <span>Actions</span>,
+		cell: (props) => (
+			<div className="flex space-x-2">
+				<EditPropertyButton property={props.row.original} />
+				<DeletePropertyButton property={props.row.original}/>
+			</div>
+		),
+	}),
 ];
 
 const PropertyTable = () => {
-  const { data, isLoading } = usePropertyList();
+	const { data, isLoading } = usePropertyList();
 
-  const table = useReactTable({
-    data: data?.properties ?? [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+	const table = useReactTable({
+		data: data?.properties ?? [],
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+	});
 
-  if (isLoading) {
-    return <div> Loading ...</div>;
-  }
+	if (isLoading) {
+		return <div> Loading ...</div>;
+	}
 
-  return (
-    <div className="px-4 py-2 border border-neutral-200 rounded-xl bg-white mt-8">
-      <table className="table-auto w-full border-collapse">
-        <thead className="border-b border-neutral-200">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  className={`text-left text-neutral-500 text-sm font-medium pt-2 pb-4 ${header.column.id === "actions" ? "w-px whitespace-nowrap" : ""}`}
-                  key={header.id}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr className="not-last:border-b border-neutral-200" key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td className="py-3 text-sm" key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+	return (
+		<div className="p-4 border border-neutral-200 rounded-xl bg-white">
+			<table className="table-auto w-full border-collapse">
+				<thead className="border-b border-neutral-200">
+					{table.getHeaderGroups().map((headerGroup) => (
+						<tr key={headerGroup.id}>
+							{headerGroup.headers.map((header) => (
+								<th
+									className={`text-left text-neutral-500 text-sm font-medium pt-2 pb-4 ${header.column.id === "actions" ? "w-px whitespace-nowrap" : ""}`}
+									key={header.id}
+								>
+									{header.isPlaceholder
+										? null
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext(),
+											)}
+								</th>
+							))}
+						</tr>
+					))}
+				</thead>
+				<tbody>
+					{table.getRowModel().rows.map((row) => (
+						<tr className="not-last:border-b border-neutral-200" key={row.id}>
+							{row.getVisibleCells().map((cell) => (
+								<td className="py-3 text-sm" key={cell.id}>
+									{flexRender(cell.column.columnDef.cell, cell.getContext())}
+								</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
 };
 
 export default PropertyTable;

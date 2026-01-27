@@ -2,10 +2,10 @@ import { Elysia } from "elysia";
 import { createContainer } from "./container";
 import { healthModule } from "./modules/health";
 import { createIdentityModule } from "./modules/identity/interface/http";
-import { createOrganizationModule } from "./modules/organization/interface/http";
-import { appErrorHandler } from "./shared/middleware/errorHandler";
-import { createPropertyModule } from "./modules/property/interface/http";
 import { createMediaModule } from "./modules/media";
+import { createOrganizationModule } from "./modules/organization/interface/http";
+import { createPropertyModule } from "./modules/property/interface/http";
+import { appErrorHandler } from "./shared/middleware/errorHandler";
 
 export const buildApp = async () => {
   const container = createContainer();
@@ -18,9 +18,9 @@ export const buildApp = async () => {
     container.identity.service.authService,
   );
 
-  const propertyModule = createPropertyModule(
-    container.property.service.property,
-  );
+  const propertyModule = createPropertyModule({
+    propertyService: container.property.service.property,
+    });
 
   const organizationModule = createOrganizationModule(
     container.organization.service.organization,

@@ -4,7 +4,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 export const Route = createFileRoute("/_protected")({
   pendingComponent: () => <div>Loading...</div>,
   component: () =>
-    <div className="h-screen w-screen flex">
+    <div className="h-dvh flex">
       <Outlet />
     </div>
 });

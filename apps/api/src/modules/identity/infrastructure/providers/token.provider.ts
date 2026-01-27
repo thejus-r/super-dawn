@@ -1,6 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto"
 import { promisify } from "node:util";
 import jwt from 'jsonwebtoken';
+import { AppError } from "@/shared/utils/AppError";
 import type { Session } from '../../domain/entity/session.entity';
 import { type AccessTokenPayload, type ITokenProvider, RefreshTokenValidationResult, type RefreshTokenValidationStatus } from '../../domain/ports/token-provider';
 
@@ -39,14 +40,17 @@ export class TokenProvider implements ITokenProvider {
     })
   }
 
-  verifyAccessToken = async (token: string): Promise<AccessTokenPayload | null> => {
+  verifyAccessToken = async (token: string): Promise<AccessTokenPayload> => {
     try {
       return await verifyAsync(token, this.ACCESS_TOKEN_SECRET, {
         algorithms: [ this.ALGORITHM ]
       }) as AccessTokenPayload
     } catch (error) {
       console.error(error)
-      return null;
+      throw new AppError({
+        message: "invalid/expired token",
+        statusCode: 403
+      })
     }
   }
 

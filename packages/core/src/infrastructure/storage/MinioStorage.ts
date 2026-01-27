@@ -1,5 +1,6 @@
-import type { IStorageService } from "../../domain/services/IStorageService";
 import { Client } from "minio";
+import type { IStorageService, ObjectWithMetadata } from "../../domain/services/IStorageService";
+
 
 export class MinioStorage implements IStorageService {
   private client: Client;
@@ -31,13 +32,22 @@ export class MinioStorage implements IStorageService {
     return key;
   };
 
-  download = async (key: string): Promise<Buffer> => {
+  download = async (key: string): Promise<ObjectWithMetadata> => {
+
     const dataStream = await this.client.getObject(this.bucket, key);
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
+      let mimeType = 'application/octet-stream';
+
+      dataStream.on("metaData", (metadata) => {
+        mimeType = metadata['content-type'] || mimeType;
+      })
 
       dataStream.on("data", (chunk) => chunks.push(chunk));
-      dataStream.on("end", () => resolve(Buffer.concat(chunks)));
+      dataStream.on("end", () => resolve({
+        buffer: Buffer.concat(chunks),
+        mimeType: mimeType
+      }));
       dataStream.on("error", (err) => reject(err));
     });
   };

@@ -58,7 +58,10 @@ export const createAuthRouter = (authService: IAuthService) => {
     )
     .get(
       "/refresh",
-      async ({ cookie: { refresh_token } }) => {
+      async ({ cookie: { refresh_token }, headers }) => {
+
+        const orgId = headers["X-Org-Id"] ?? null
+
         if (!refresh_token.value) {
           throw new AppError({
             message: "no refresh token present in cookie",
@@ -68,7 +71,7 @@ export const createAuthRouter = (authService: IAuthService) => {
         }
 
         const { refreshToken, accessToken, user } =
-          await authService.refreshTokens(refresh_token.value);
+          await authService.refreshTokens(refresh_token.value, orgId);
 
         refresh_token.set({
           value: refreshToken,
@@ -82,15 +85,33 @@ export const createAuthRouter = (authService: IAuthService) => {
         });
       },
       {
+        headers: t.Object({
+          "X-Org-Id": t.Optional(t.String())
+        }),
         cookie: t.Cookie({
           refresh_token: t.Optional(t.String()),
         }),
       },
     )
     .use(authMiddleware(new TokenProvider()))
-    .get("/me", async ({ user }) => {
-      return Response.json({
-        user,
-      });
-    });
+    .get("/me", async ({ user: { userId } }) => {
+
+      const user = await authService.findUserWithId(userId)
+
+      if (!user) {
+        throw new AppError({
+          message: "user not found",
+          statusCode: 401
+        })
+      }
+      return user
+    })
+    .get				("/switch-org", async ({ user: { userId } }) => {
+      return await authService.switchOrganization(userId, undefined );
+    })
+    .get("/switch-org/:orgId", async ({ user: { userId }, params: { orgId } }) => {
+      return await authService.switchOrganization(userId, orgId)
+    }
+    )
+
 };

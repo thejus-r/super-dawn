@@ -33,7 +33,7 @@ export const createContainer = () => {
   );
 
   // Services
-  const authService = new AuthService(authRepo, sessionRepo);
+  const authService = new AuthService(authRepo, sessionRepo, membershipRepo);
   const propertyService = new PropertyService(orgGateway, propertyRepo);
 
   const orgIdentityAdapter = new IdentityOrganizationAdapter(

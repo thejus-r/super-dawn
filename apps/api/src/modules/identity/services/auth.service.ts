@@ -1,5 +1,6 @@
 import { AppError } from "@/shared/utils/AppError";
 import type { IAuthService } from "../domain/auth.domain";
+import type { IMembershipRepository } from "../domain/entity/membership.entity";
 import type { Session } from "../domain/entity/session.entity";
 import type {
   IAuthStrategy,
@@ -10,11 +11,12 @@ import { TokenProvider } from "../infrastructure/providers/token.provider";
 import type { AuthRepository } from "../infrastructure/repository/auth.repository";
 import type { SessionRepository } from "../infrastructure/repository/session.repository";
 import { EmailPasswordStrategy } from "../infrastructure/strategies";
-import type { CreateUserInput, LoginUserInput } from "../transport/dto/auth.dto";
+import type { CreateUserInput, LoginUserInput } from "../interface/dto/auth.dto";
 
 export class AuthService implements IAuthService {
   private authRepository: AuthRepository;
   private sessionRepository: SessionRepository;
+  private membershipRepository: IMembershipRepository
 
   private authStratagies: Record<LoginMethodType, IAuthStrategy>;
 
@@ -23,9 +25,11 @@ export class AuthService implements IAuthService {
   constructor(
     authRepository: AuthRepository,
     sessionRepository: SessionRepository,
+    membershipRepository: IMembershipRepository
   ) {
     this.authRepository = authRepository;
     this.sessionRepository = sessionRepository;
+    this.membershipRepository = membershipRepository
 
     this.authStratagies = {
       email: new EmailPasswordStrategy(this.authRepository),
@@ -33,6 +37,10 @@ export class AuthService implements IAuthService {
     };
 
     this.tokenProvider = new TokenProvider();
+  }
+
+  findUserWithId = async (userId: string) => {
+    return await this.authRepository.findById(userId)
   }
 
   createUser = async ({ method, ...payload }: CreateUserInput) => {
@@ -75,15 +83,44 @@ export class AuthService implements IAuthService {
     };
   };
 
-  /*
-  returns new token pairs, if the refresh token is valid
-  otherwise based on the validation result, it handles the events and
-  throws appropriate errors
+  switchOrganization = async (userId: string, orgId?: string) => {
+
+    let role = "owner"
+    if (orgId) {
+      const membership = await this.membershipRepository.findByIds(userId, orgId)
+      if (!membership) {
+        throw new AppError({
+          message: "membership not found",
+          statusCode: 403
+        })
+      }
+
+      role = membership.role
+    }
+
+    const accessToken = await this.tokenProvider.generateAccessToken({
+      userId: userId,
+      organizationId: orgId
+    });
+
+    return {
+      accessToken,
+      userRole: role,
+      organizationId: orgId
+    }
+
+  }
+
+  /**
+  * returns new token pairs, if the refresh token is valid
+  * otherwise based on the validation result, it handles the events and
+  * throws appropriate errors
   */
 
   // TODO: Change to AppError, once error middleware is added.
 
-  refreshTokens = async (incomingRefreshToken: string) => {
+  refreshTokens = async (incomingRefreshToken: string, orgId: string | null) => {
+
     const hashedIncomingRefreshToken =
       this.tokenProvider.hashToken(incomingRefreshToken);
 
@@ -106,11 +143,14 @@ export class AuthService implements IAuthService {
       sessionRecord,
     );
 
+    const isValidScope = await this.#validateScope(user.id, orgId)
+    const currentOrdId = isValidScope ? orgId : null
+
     switch (validationResult) {
       case "VALID": {
         // Happy Path
         // We send a response
-        const tokens = await this.#rotateTokens(sessionRecord);
+        const tokens = await this.#rotateTokens(sessionRecord, currentOrdId);
         return { user, ...tokens };
       }
       // less happy path
@@ -118,6 +158,7 @@ export class AuthService implements IAuthService {
         const tokens = await this.#refreshAccessToken(
           incomingRefreshToken,
           sessionRecord,
+          currentOrdId
         );
         return { user, ...tokens };
       }
@@ -146,16 +187,16 @@ export class AuthService implements IAuthService {
         });
       }
       default:
-        throw new AppError({
-          message: `authentication failed`,
-          statusCode: 500,
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      throw new AppError({
+        message: `authentication failed`,
+        statusCode: 500,
+        code: "INTERNAL_SERVER_ERROR",
+      });
     }
   };
 
-  /*
-  We revoke all the tokens
+  /**
+  * We revoke all the tokens
   */
   #handleTokenReuse = async ({ userId }: Session) => {
     console.warn(`[security] token reuse detected for: ${userId}`);
@@ -163,17 +204,18 @@ export class AuthService implements IAuthService {
     console.warn(`[security] revoked all tokens for: ${userId}`);
   };
 
-  /*
-  Revokes the exisiting token from the database and creates a new session
-  in the database.
-
-  Returns the new token pair (refreshToken & accessToken)
+  /**
+  * Revokes the exisiting token from the database and creates a new session
+  * in the database.
+  *
+  * Returns the new token pair (refreshToken & accessToken)
   */
-  #rotateTokens = async ({ userId, id }: Session) => {
+  #rotateTokens = async ({ userId, id }: Session, orgId?: string | null) => {
     const { token: refreshToken, hashedToken: hashedRefreshToken } =
       await this.tokenProvider.generateRefreshToken();
     const accessToken = await this.tokenProvider.generateAccessToken({
       userId: userId,
+      organizationId: orgId || undefined
     });
 
     await this.sessionRepository.insertAndRevoke(
@@ -192,9 +234,10 @@ export class AuthService implements IAuthService {
   When token is revoked within grace period, we only issue a new access-token
   this ensures better UX for the end-user and keeps the valid window of refresh-token secure
   */
-  #refreshAccessToken = async (incomingToken: string, { userId }: Session) => {
+  #refreshAccessToken = async (incomingToken: string, { userId }: Session,  orgId?: string | null) => {
     const accessToken = await this.tokenProvider.generateAccessToken({
       userId: userId,
+      organizationId: orgId ?? undefined
     });
 
     return { refreshToken: incomingToken, accessToken };
@@ -208,6 +251,7 @@ export class AuthService implements IAuthService {
       await this.tokenProvider.generateRefreshToken();
     const accessToken = await this.tokenProvider.generateAccessToken({
       userId: userId,
+      organizationId: undefined
     });
 
     await this.sessionRepository.create({
@@ -218,4 +262,12 @@ export class AuthService implements IAuthService {
 
     return { refreshToken, accessToken };
   };
+
+  #validateScope = async (userId: string, orgId: string | null) => {
+    if (!orgId) {
+      return false
+    }
+    const user = await this.membershipRepository.findByIds(userId, orgId)
+    return !!user
+  }
 }

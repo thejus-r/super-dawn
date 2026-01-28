@@ -8,8 +8,12 @@ export class OrganizationPropertyAdapter implements IOrganizationGateway {
     private readonly accessService: AccessControlService
   ) { }
 
+  canReadProperty = async (userId: string, orgId: string): Promise<boolean> => {
+    return await this.accessService.can(userId, orgId, "read", "property")
+  }
+
   canCreateProperty = async (userId: string, orgId: string): Promise<boolean> => {
-    return await this.accessService.can(userId, orgId, "CREATE", "PROPERTY")
+    return await this.accessService.can(userId, orgId, "create", "property")
   }
 
   exists = async (orgId: string): Promise<boolean> => {

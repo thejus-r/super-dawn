@@ -1,4 +1,4 @@
-import { and, eq} from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { Database, DrizzleDB } from "@/db";
 import { credentials, users } from "@/db/schema";
 import type { NewCredentials } from "../../domain/entity/credential.entity";
@@ -14,6 +14,22 @@ export class AuthRepository {
   findByEmail = async (email: string) => {
     return await this.db.query.users.findFirst({
       where: eq(users.email, email)
+    })
+  }
+
+  findById = async (userId: string) => {
+    return await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+      with: {
+        memberships: {
+          columns: {
+            role: true
+          },
+          with: {
+            organization: true
+          }
+        }
+      }
     })
   }
 

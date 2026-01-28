@@ -13,7 +13,8 @@ export const RolePermissions: Record<UserRole, Permission[]> = {
   ],
   [UserRole.Owner]: [
     { resource: Resource.Organization, actions: [Action.Manage] },
-    { resource: Resource.User, actions: [Action.Manage] }
+    { resource: Resource.User, actions: [Action.Manage] },
+    { resource: Resource.Property, actions: [Action.Manage] }
   ],
   [UserRole.Admin]: [
     { resource: Resource.Organization, actions: [Action.Create, Action.Delete, Action.Read, Action.Update] },

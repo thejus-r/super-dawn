@@ -1,6 +1,5 @@
 import Elysia from "elysia";
 import type { IPropertyService } from "../../domain/entity/property.entity";
-import type { IPermissionPort } from "../../domain/ports/permissions.port";
 import { createPropertyRouter } from "./property.router";
 
 type PropertyModuleConfig = {

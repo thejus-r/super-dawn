@@ -21,7 +21,10 @@ const apiClient = axios.create({
   },
 });
 
-apiClient.interceptors.request.use((config: CustomAxiosRequestConfig) => {
+apiClient.interceptors.request.use( async (config: CustomAxiosRequestConfig) => {
+
+  // Artificial delay
+  // await new Promise((resolve) => setTimeout(resolve, 1000))
   const { accessToken: token } = useAuthStore.getState();
   config.headers.Authorization =
     token && !config._retry ? `Bearer ${token}` : config.headers.Authorization;
@@ -35,7 +38,11 @@ apiClient.interceptors.response.use(
     if (error.status === 401 && !originalRequest._retry) {
       const { setAccessToken } = useAuthStore.getState();
 
-      const response = await publicApiClient.get("/identity/refresh", {});
+      const response = await publicApiClient.get("/identity/refresh", {
+        headers: {
+          "X-Org-Id": useAuthStore.getState().organizationId ?? null
+        }
+      });
       const newAccessToken = response.data.accessToken;
       setAccessToken(newAccessToken);
 

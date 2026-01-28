@@ -27,6 +27,7 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
 
       const result = await propertyService.list({
         userId: userId,
+        organizationId: organizationId,
         options: {
           filters: {
             authorId: userId
@@ -49,7 +50,7 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
         }
         const res = await propertyService.create({
           userId: user.userId,
-          orgId: undefined,
+          orgId: user.organizationId,
           payload: {
             ...body,
           },

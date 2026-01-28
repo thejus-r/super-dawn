@@ -1,11 +1,15 @@
 import { create } from "zustand"
 
-interface AuthState {
+export interface AuthState {
   accessToken: string | null | undefined;
   setAccessToken: (token: string) => void;
+  organizationId: string | null;
+  setOrganizationId: (id: string| null) => void;
 }
 
 export const useAuthStore = create<AuthState>()((set) => ({
   accessToken: undefined,
-  setAccessToken: (token) => set(() =>({accessToken: token }))
+  setAccessToken: (token) => set(() => ({ accessToken: token })),
+  organizationId: null,
+  setOrganizationId: (id) => set(() => ({ organizationId: id }))
 }))

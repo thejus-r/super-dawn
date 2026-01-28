@@ -10,6 +10,7 @@ export const UserRole = {
 export const Resource = {
 	Organization: "organization",
 	User: "user",
+	Property: "property",
 } as const;
 
 export const Action = {

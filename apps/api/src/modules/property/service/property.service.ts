@@ -1,3 +1,4 @@
+import { AppError } from "@/shared/utils/AppError";
 import type {
   IPropertyRepository,
   IPropertyService,
@@ -112,13 +113,13 @@ export class PropertyService implements IPropertyService {
 
 
     if (organizationId) {
-      // const can = await this.permissionChecker.can(userId, organizationId, "READ")
-      // if (!can) {
-      //   throw new AppError({
-      //     message: 'requires elevated permission',
-      //     statusCode: 403
-      //   })
-      // }
+      const can = await this.orgGateway.canReadProperty(userId, organizationId)
+      if (!can) {
+        throw new AppError({
+          message: 'requires elevated permission',
+          statusCode: 403
+        })
+      }
       finalFilter.organizationId = organizationId
     } else {
       finalFilter.organizationId = null

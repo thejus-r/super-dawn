@@ -45,11 +45,11 @@ const columns = [
 ];
 
 const PropertyTable = () => {
-	const { data, isLoading } = usePropertyList();
-
+  const { data, isLoading } = usePropertyList();
 	const table = useReactTable({
 		data: data?.properties ?? [],
-		columns,
+    columns,
+    manualPagination: true,
 		getCoreRowModel: getCoreRowModel(),
 	});
 
@@ -58,14 +58,14 @@ const PropertyTable = () => {
 	}
 
 	return (
-		<div className="p-4 border border-neutral-200 rounded-xl bg-white">
+		<div className="px-4 border border-neutral-200 rounded-xl bg-white">
 			<table className="table-auto w-full border-collapse">
 				<thead className="border-b border-neutral-200">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
 								<th
-									className={`text-left text-neutral-500 text-sm font-medium pt-2 pb-4 ${header.column.id === "actions" ? "w-px whitespace-nowrap" : ""}`}
+									className={`text-left text-neutral-500 text-sm font-medium pt-2.5 pb-2.5 ${header.column.id === "actions" ? "w-px whitespace-nowrap" : ""}`}
 									key={header.id}
 								>
 									{header.isPlaceholder
@@ -83,7 +83,7 @@ const PropertyTable = () => {
 					{table.getRowModel().rows.map((row) => (
 						<tr className="not-last:border-b border-neutral-200" key={row.id}>
 							{row.getVisibleCells().map((cell) => (
-								<td className="py-3 text-sm" key={cell.id}>
+								<td className="py-2.5 text-sm" key={cell.id}>
 									{flexRender(cell.column.columnDef.cell, cell.getContext())}
 								</td>
 							))}

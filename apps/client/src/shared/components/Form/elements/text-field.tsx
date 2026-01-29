@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { useFieldContext } from "../hooks/form-context";
 
 const inputVariants = cva(
-  ["border", "rounded-lg", "h-9", "px-2", "bg-stone-100"],
+  ["border", "rounded-lg", "h-9", "px-2", "bg-stone-100", "w-full"],
   {
     variants: {
       intent: {

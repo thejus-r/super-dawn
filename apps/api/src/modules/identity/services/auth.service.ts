@@ -83,6 +83,12 @@ export class AuthService implements IAuthService {
     };
   };
 
+  logoutUser = async (incomingRefreshToken: string) => {
+    const hashedIncomingRefreshToken =
+      this.tokenProvider.hashToken(incomingRefreshToken);
+    await this.sessionRepository.revoke(hashedIncomingRefreshToken)
+  }
+
   switchOrganization = async (userId: string, orgId?: string) => {
 
     let role = "owner"

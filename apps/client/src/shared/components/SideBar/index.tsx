@@ -1,48 +1,61 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { BriefcaseIcon, HouseIcon, LayoutDashboardIcon } from  "lucide-react"
 import { Suspense } from "react";
 import { currentUserQueryOptions } from "@/features/auth/api/auth-query-options";
+import { LogoutButton } from "@/features/auth/components/logout-button";
 import { ScopeSwitcher } from "./scope-switcher";
 
 const sideBarLink = [
   {
     label: "Dashboard",
-    to: "/$scopeId"
+    to: "/$scopeId/dashboard",
+    icon: <LayoutDashboardIcon size={16}/>
   },
   {
     label: "Property",
-    to: "/$scopeId/property"
+    to: "/$scopeId/property",
+    icon: <HouseIcon size={16}/>
   },
   {
-    label: "Account",
-    to: "/$scopeId/account"
+    label: "Workspace",
+    to: "/$scopeId/workspace",
+    icon: <BriefcaseIcon size={16}/>
   }
 ] as const
 
 export const SideBar = ({ orgSlug }: { orgSlug: string}) => {
-	return (
-		<div className="p-3.5 w-56 border-r border-neutral-200 flex flex-col justify-between">
-			<div>
-				<h3 className="text-xl font-semibold">superdawn</h3>
-			</div>
+  return (
+    <div className="p-3.5 w-56 border-r border-neutral-200 flex flex-col justify-between">
+      <div>
+        <h3 className="text-xl font-semibold">superdawn</h3>
+      </div>
 
-			<nav className="flex flex-col gap-2">
-				{sideBarLink.map((link) => (
-          <Link key={link.to} to={link.to} params={{ scopeId: orgSlug  }}>
-						{link.label}
-					</Link>
-				))}
+      <nav className="flex flex-col gap-1">
+        {sideBarLink.map((link) => (
+          <Link
+            className="rounded-xl px-3 py-1.5 transition-all duration-150"
+            activeProps={{
+              className: "bg-white outline outline-stone-300 drop-shadow-md"
+            }} key={link.to} to={link.to} params={{ scopeId: orgSlug }}>
+              <span className="flex gap-2 items-center">
+                { link.icon }
+                {link.label}
+              </span>
+            </Link>
+        ))}
       </nav>
       <div className="flex flex-col gap-2">
-			<ScopeSwitcher/>
-      <div className="flex gap-2">
-        <Suspense fallback={<ProfileCardSkeleton/>}>
-          <ProfileCard/>
-        </Suspense>
-			</div>
+        <ScopeSwitcher/>
+        <div className="flex gap-2">
+          <Suspense fallback={<ProfileCardSkeleton/>}>
+            <ProfileCard/>
+          </Suspense>
+        </div>
+        <LogoutButton/>
       </div>
-		</div>
-	);
+    </div>
+  );
 };
 
 const ProfileCard = () => {

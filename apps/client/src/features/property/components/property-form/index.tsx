@@ -83,7 +83,12 @@ export const BasicFields = withForm({
   render: ({ form }) => {
     return (
       <div className="">
-        <h3 className="font-semibold mb-2">Basic Details</h3>
+        <div>
+          <h3 className="font-serif font-semibold mb-1">Basic Details</h3>
+          <p className="text-sm text-stone-400 mb-4">
+            Fill the basic details.
+          </p>
+        </div>
         <form.AppField
         name="name"
         children={(field) => <field.TextField label="Property Name" />}
@@ -96,6 +101,7 @@ export const BasicFields = withForm({
         name="ownerContact"
         children={(field) => <field.TextField label="Owner Contact" />}
         />
+        <div className="flex gap-2">
         <form.AppField
         name="monthlyRent"
         children={(field) => (
@@ -108,6 +114,7 @@ export const BasicFields = withForm({
           <field.TextField label="Security Deposit" type="number" />
         )}
         />
+        </div>
       </div>
     );
   },
@@ -118,7 +125,7 @@ export const ImageFields = withForm({
   render: ({ form }) => {
     return (
       <div>
-        <h3 className="font-semibold mb-1">Gallery</h3>
+        <h3 className="font-serif font-semibold mb-1">Gallery</h3>
         <p className="text-sm text-stone-400 mb-4">
           Upload photos of the property.
         </p>

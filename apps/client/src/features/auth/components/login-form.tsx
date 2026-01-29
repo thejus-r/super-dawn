@@ -14,7 +14,7 @@ export const LoginForm = () => {
       await mutateAsync(value)
     }
   })
-  return <div className="grow bg-stone-100 flex flex-col items-center justify-center">
+  return <div className="w-full h-full flex items-center justify-center">
     <form
       onSubmit={(e) => {
         e.preventDefault()
@@ -23,7 +23,7 @@ export const LoginForm = () => {
       className="p-4 bg-white rounded-lg w-96"
     >
       <div className="flex flex-col gap-1 mb-4">
-        <h2 className="text-lg font-semibold">Welcome back</h2>
+        <h2 className="font-serif text-lg font-semibold">Welcome back</h2>
         <p className="text-sm text-stone-400">Enter your credentials to login back.</p>
       </div>
       <form.AppField

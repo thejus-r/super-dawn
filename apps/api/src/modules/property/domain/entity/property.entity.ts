@@ -1,5 +1,6 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import type { media, properties, propertyImages } from "@/db/schema";
+import type { PaginatedReponse } from "@/shared/types";
 import type { CreatePropertyPayload } from "../../interface/dto/property.dto";
 
 export type Property = InferSelectModel<typeof properties>;
@@ -49,7 +50,7 @@ export type PropertyWithImage = Property & {
 export interface IPropertyRepository {
   create: (payload: NewPropertyWithImage) => Promise<PropertyWithImageRecord>;
   update: (id: string, payload: NewPropertyWithImage) => Promise<void>;
-  listAll: (options: PropertyQueryOptions) => Promise<PropertyWithImage[]>;
+  listAll: (options: PropertyQueryOptions) => Promise<{ data: PropertyWithImage[], count: number} >;
   getById: ({
     propertyId,
   }: {
@@ -78,7 +79,7 @@ export type IPropertyService = {
     userId: string;
     organizationId?: string;
     options: PropertyQueryOptions;
-  }) => Promise<Property[]>;
+  }) => Promise<PaginatedReponse<Property[]>>;
 
   getById: ({
     propertyId,
@@ -87,5 +88,5 @@ export type IPropertyService = {
   }) => Promise<PropertyWithImage | null>;
 
   delete: ({ propertyId }: { propertyId: string }) => Promise<void>;
-  update: ({ propertyId, payload }: { propertyId: string, payload: CreatePropertyPayload }) => Promise<void>;
+  update: ({ userId, orgId, propertyId, payload }: { userId: string, orgId?: string, propertyId: string, payload: CreatePropertyPayload }) => Promise<void>;
 };

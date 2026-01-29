@@ -6,5 +6,7 @@ export const Route = createRootRouteWithContext<AppRouterContext>()({
 });
 
 function RootComponent() {
-	return <Outlet />;
+  return <div className="h-full">
+    <Outlet />
+  </div>
 }

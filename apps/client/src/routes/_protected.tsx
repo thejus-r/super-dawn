@@ -3,14 +3,16 @@ import { currentUserQueryOptions } from "@/features/auth/api/auth-query-options"
 
 // Handle Auth Check it, else kicks to login page
 export const Route = createFileRoute("/_protected")({
-  beforeLoad: async ({ context }) => {
-
+  beforeLoad: async ({ context, location }) => {
     const { queryClient } = context
     try {
       await queryClient.ensureQueryData(currentUserQueryOptions())
     } catch {
       throw redirect({
-        to: "/login"
+        to: "/login",
+        search: {
+          redirect: location.href
+        }
       })
     }
   },

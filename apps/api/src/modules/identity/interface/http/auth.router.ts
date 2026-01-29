@@ -106,12 +106,35 @@ export const createAuthRouter = (authService: IAuthService) => {
       }
       return user
     })
-    .get				("/switch-org", async ({ user: { userId } }) => {
+    .get("/switch-org", async ({ user: { userId } }) => {
       return await authService.switchOrganization(userId, undefined );
     })
     .get("/switch-org/:orgId", async ({ user: { userId }, params: { orgId } }) => {
       return await authService.switchOrganization(userId, orgId)
-    }
+    })
+    .get("/logout", async ({ cookie }) => {
+      const { refresh_token } = cookie
+
+      try {
+        if (refresh_token.value) {
+          await authService.logoutUser(refresh_token.value)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+
+      refresh_token.set({
+        value: refresh_token.value,
+        expires: new Date(-1),
+        httpOnly: true,
+        sameSite: "strict",
+      });
+    },
+      {
+        cookie: t.Cookie({
+          refresh_token: t.Optional(t.String()),
+        }),
+      }
     )
 
 };

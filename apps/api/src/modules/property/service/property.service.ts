@@ -92,9 +92,7 @@ export class PropertyService implements IPropertyService {
       })),
     });
 
-    return {
-      success: "ok",
-    };
+    return
   };
 
   list = async ({
@@ -111,7 +109,7 @@ export class PropertyService implements IPropertyService {
       ...options.filters
     }
 
-
+    // Check if the user has permission
     if (organizationId) {
       const can = await this.orgGateway.canReadProperty(userId, organizationId)
       if (!can) {
@@ -122,22 +120,41 @@ export class PropertyService implements IPropertyService {
       }
       finalFilter.organizationId = organizationId
     } else {
+      // Organization = null, helps to filter out properties without organization
+      // i.e for personal workspace
       finalFilter.organizationId = null
       finalFilter.authorId = userId
     }
 
-      const properties =  await this.propertyRepo.listAll({
-        ...options,
-        filters: finalFilter
-      })
+    const { data, count: totalItems } =  await this.propertyRepo.listAll({
+      ...options,
+      filters: finalFilter
+    })
 
+    // Calculate meta data
+    const page = options.page || 1;
+    const limit = options.limit || 10;
+    const totalPages = Math.ceil(totalItems / limit);
 
-    return properties.map(property => {
+    // Mapping as required by response
+    const reponseData = data.map(property => {
       return {
         ...property,
         images: property.images.map(image => image.image)
       }
     })
+
+    return {
+      data: reponseData,
+      meta: {
+        current_page: page,
+        page_size: limit,
+        total_items: totalItems,
+        total_pages: totalPages,
+        has_next_page: page < totalPages,
+        has_previous_page: page > 1
+      }
+    }
   };
 
   delete = async ({ propertyId }: { propertyId: string }) => {

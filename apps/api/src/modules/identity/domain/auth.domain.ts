@@ -35,6 +35,7 @@ export type Token = {
 export type IAuthService = {
   createUser: (payload: CreateUserInput) => Promise<AuthResult>;
   loginUser: (payload: LoginUserInput) => Promise<AuthResult>;
+  logoutUser: (incomingToken: string) => Promise<void>;
   refreshTokens: (incomingToken: string, orgId: string | null) => Promise<AuthResult>;
   findUserWithId: (userId: string) => Promise<UserWithOrgs | undefined>,
   switchOrganization: (userId: string, orgId?: string) => Promise<Token>

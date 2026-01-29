@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { TokenProvider } from "@/modules/identity/infrastructure/providers/token.provider";
 import { authMiddleware } from "@/shared/middleware/auth-middleware";
 import { AppError } from "@/shared/utils/AppError";
@@ -20,24 +20,32 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
 
   return new Elysia()
     .use(authMiddleware(tokenProvider))
-    .get("/", async ({ user: { userId, organizationId } }) => {
+    .get("/", async ({ user, query }) => {
 
+      const { userId, organizationId } = user
+      const { limit, page, search } = query
       // if organizationId is null | undefined,
       // send back the properties without organization authored by user
 
-      const result = await propertyService.list({
+      return await propertyService.list({
         userId: userId,
         organizationId: organizationId,
         options: {
+          limit: limit,
+          page: page,
           filters: {
+            search: search,
             authorId: userId
           }
         }
       });
+    }, {
+      query: t.Object({
+        limit: t.Optional(t.Number()),
+        page: t.Optional(t.Number()),
+        search: t.Optional(t.String()),
+      })
 
-      return {
-        properties: result,
-      };
     })
     .post(
       "/",
@@ -80,7 +88,7 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
         .get("/", async ({ property }) => {
           return property;
         })
-        .delete("/", async ({ property }) => {
+        .delete("/", async ({ property, user: { userId, organizationId } }) => {
           await propertyService.delete({ propertyId: property.id });
 
           return {
@@ -88,8 +96,13 @@ export const createPropertyRouter = (config: PropertyRouterConfig) => {
             statusCode: 204,
           };
         })
-        .patch("/", async ({ property, body }) => {
-          await propertyService.update({ propertyId: property.id, payload: body  })
+        .patch("/", async ({ property, body, user: { userId, organizationId } }) => {
+          await propertyService.update({
+            userId: userId,
+            orgId: organizationId,
+            propertyId: property.id,
+            payload: body
+          })
 
         }, {
           body: createPropertySchema,

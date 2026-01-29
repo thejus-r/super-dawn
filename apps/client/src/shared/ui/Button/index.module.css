@@ -1,6 +1,8 @@
 .Base {
     display: flex;
     text-align: center;
+    place-items: center;
+    gap: 0.25rem;
     justify-content: center;
     cursor: pointer;
 }
@@ -50,7 +52,7 @@
 }
 
 .Regular {
-    font-size: var(--text);
+    font-size: var(--text-sm);
     min-width: 64px;
     padding: 0.35rem 1rem;
     border-radius: var(--radius-lg);

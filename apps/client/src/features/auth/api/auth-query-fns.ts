@@ -14,3 +14,7 @@ export async function validateScope(orgId?: string) {
   const response = await api.apiClient<ValidateScopeResponse>(baseURI)
   return response.data
 }
+
+export async function logoutUser() {
+  await api.apiClient.get("identity/logout")
+}

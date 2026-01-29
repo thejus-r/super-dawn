@@ -2,7 +2,7 @@ import { create } from "zustand"
 
 export interface AuthState {
   accessToken: string | null | undefined;
-  setAccessToken: (token: string) => void;
+  setAccessToken: (token: string | null) => void;
   organizationId: string | null;
   setOrganizationId: (id: string| null) => void;
 }

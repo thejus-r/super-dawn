@@ -6,7 +6,7 @@ export const Route = createFileRoute('/_public/register')({
 })
 
 function RouteComponent() {
-  return  <div className="grow flex flex-col">
+  return  <div className="h-full w-full flex flex-col">
     <RegisterWithEmail/>
   </div>
 }

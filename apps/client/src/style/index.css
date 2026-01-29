@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-display: swap;
+    src: url("../assets/fonts/Inter.ttf");
+}
+
+@font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-display: swap;
+    src: url("../assets/fonts/Inter-Italic.ttf");
+}
+
+@font-face {
+    font-family: Lora;
+    font-style: normal;
+    font-display: swap;
+    src: url("../assets/fonts/Lora.ttf");
+}
+
+@font-face {
+    font-family: Lora;
+    font-style: italic;
+    font-display: swap;
+    src: url("../assets/fonts/Lora-Italic.ttf");
+}
+
+@theme {
+    --font-sans: Inter, sans-serif;
+    --font-serif: Lora, serif;
+}
+
+html, body, #root {
+  @apply h-full;
+  /* Or use h-screen if you want to force viewport height */
+}

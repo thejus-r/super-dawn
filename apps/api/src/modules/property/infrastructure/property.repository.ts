@@ -1,4 +1,4 @@
-import { and,asc, desc, eq, ilike, inArray, isNull, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, isNull, type SQL } from "drizzle-orm";
 import type { Database } from "@/db";
 import { properties, propertyImages } from "@/db/schema/property";
 import type {
@@ -28,7 +28,7 @@ export class PropertyRepository implements IPropertyRepository {
 
     const orderByClause = this.buildOrderByClause(sortBy, sortOrder)
 
-    const res = await this.db.query.properties.findMany({
+    const dataQuery = this.db.query.properties.findMany({
       where: whereConditions,
       limit: limit,
       offset: offset,
@@ -40,10 +40,14 @@ export class PropertyRepository implements IPropertyRepository {
             image: true
           }
         }
-      }
+      },
     })
 
-    return res
+    const countQuery = this.db.select({ count: count() }).from(properties).where(whereConditions);
+
+    const [data, totalProperties] = await Promise.all([dataQuery, countQuery])
+
+    return { data, count: totalProperties[0]?.count || 0 }
   };
 
   create = async (payload: NewPropertyWithImage) => {
@@ -179,7 +183,7 @@ export class PropertyRepository implements IPropertyRepository {
     const conditions: SQL[] = [];
 
     if (filters.search) {
-      conditions.push(ilike(properties.name, `%${filters.search}`))
+      conditions.push(ilike(properties.name, `%${filters.search}%`))
     }
 
     if (filters.authorId) {

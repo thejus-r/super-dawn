@@ -9,16 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PublicRouteImport } from './routes/_public'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
 import { Route as PublicRegisterRouteImport } from './routes/_public/register'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ProtectedCreateOrganizationRouteImport } from './routes/_protected/create-organization'
 import { Route as ProtectedScopeIdRouteImport } from './routes/_protected/$scopeId'
-import { Route as ProtectedScopeIdIndexRouteImport } from './routes/_protected/$scopeId/index'
+import { Route as ProtectedScopeIdWorkspaceRouteImport } from './routes/_protected/$scopeId/workspace'
 import { Route as ProtectedScopeIdPropertyRouteImport } from './routes/_protected/$scopeId/property'
-import { Route as ProtectedScopeIdAccountRouteImport } from './routes/_protected/$scopeId/account'
+import { Route as ProtectedScopeIdDashboardRouteImport } from './routes/_protected/$scopeId/dashboard'
 
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
@@ -29,14 +34,14 @@ const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   getParentRoute: () => ProtectedRoute,
 } as any)
 const PublicRegisterRoute = PublicRegisterRouteImport.update({
-  id: '/_public/register',
+  id: '/register',
   path: '/register',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicLoginRoute = PublicLoginRouteImport.update({
-  id: '/_public/login',
+  id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PublicRoute,
 } as any)
 const ProtectedCreateOrganizationRoute =
   ProtectedCreateOrganizationRouteImport.update({
@@ -49,22 +54,24 @@ const ProtectedScopeIdRoute = ProtectedScopeIdRouteImport.update({
   path: '/$scopeId',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedScopeIdIndexRoute = ProtectedScopeIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ProtectedScopeIdRoute,
-} as any)
+const ProtectedScopeIdWorkspaceRoute =
+  ProtectedScopeIdWorkspaceRouteImport.update({
+    id: '/workspace',
+    path: '/workspace',
+    getParentRoute: () => ProtectedScopeIdRoute,
+  } as any)
 const ProtectedScopeIdPropertyRoute =
   ProtectedScopeIdPropertyRouteImport.update({
     id: '/property',
     path: '/property',
     getParentRoute: () => ProtectedScopeIdRoute,
   } as any)
-const ProtectedScopeIdAccountRoute = ProtectedScopeIdAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => ProtectedScopeIdRoute,
-} as any)
+const ProtectedScopeIdDashboardRoute =
+  ProtectedScopeIdDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => ProtectedScopeIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/$scopeId': typeof ProtectedScopeIdRouteWithChildren
@@ -72,30 +79,32 @@ export interface FileRoutesByFullPath {
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof ProtectedIndexRoute
-  '/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/$scopeId/dashboard': typeof ProtectedScopeIdDashboardRoute
   '/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
-  '/$scopeId/': typeof ProtectedScopeIdIndexRoute
+  '/$scopeId/workspace': typeof ProtectedScopeIdWorkspaceRoute
 }
 export interface FileRoutesByTo {
+  '/$scopeId': typeof ProtectedScopeIdRouteWithChildren
   '/create-organization': typeof ProtectedCreateOrganizationRoute
   '/login': typeof PublicLoginRoute
   '/register': typeof PublicRegisterRoute
   '/': typeof ProtectedIndexRoute
-  '/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/$scopeId/dashboard': typeof ProtectedScopeIdDashboardRoute
   '/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
-  '/$scopeId': typeof ProtectedScopeIdIndexRoute
+  '/$scopeId/workspace': typeof ProtectedScopeIdWorkspaceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
   '/_protected/$scopeId': typeof ProtectedScopeIdRouteWithChildren
   '/_protected/create-organization': typeof ProtectedCreateOrganizationRoute
   '/_public/login': typeof PublicLoginRoute
   '/_public/register': typeof PublicRegisterRoute
   '/_protected/': typeof ProtectedIndexRoute
-  '/_protected/$scopeId/account': typeof ProtectedScopeIdAccountRoute
+  '/_protected/$scopeId/dashboard': typeof ProtectedScopeIdDashboardRoute
   '/_protected/$scopeId/property': typeof ProtectedScopeIdPropertyRoute
-  '/_protected/$scopeId/': typeof ProtectedScopeIdIndexRoute
+  '/_protected/$scopeId/workspace': typeof ProtectedScopeIdWorkspaceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,39 +114,47 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/'
-    | '/$scopeId/account'
+    | '/$scopeId/dashboard'
     | '/$scopeId/property'
-    | '/$scopeId/'
+    | '/$scopeId/workspace'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/$scopeId'
     | '/create-organization'
     | '/login'
     | '/register'
     | '/'
-    | '/$scopeId/account'
+    | '/$scopeId/dashboard'
     | '/$scopeId/property'
-    | '/$scopeId'
+    | '/$scopeId/workspace'
   id:
     | '__root__'
     | '/_protected'
+    | '/_public'
     | '/_protected/$scopeId'
     | '/_protected/create-organization'
     | '/_public/login'
     | '/_public/register'
     | '/_protected/'
-    | '/_protected/$scopeId/account'
+    | '/_protected/$scopeId/dashboard'
     | '/_protected/$scopeId/property'
-    | '/_protected/$scopeId/'
+    | '/_protected/$scopeId/workspace'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ProtectedRoute: typeof ProtectedRouteWithChildren
-  PublicLoginRoute: typeof PublicLoginRoute
-  PublicRegisterRoute: typeof PublicRegisterRoute
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_protected': {
       id: '/_protected'
       path: ''
@@ -157,14 +174,14 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof PublicRegisterRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_public/login': {
       id: '/_public/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_protected/create-organization': {
       id: '/_protected/create-organization'
@@ -180,11 +197,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedScopeIdRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/$scopeId/': {
-      id: '/_protected/$scopeId/'
-      path: '/'
-      fullPath: '/$scopeId/'
-      preLoaderRoute: typeof ProtectedScopeIdIndexRouteImport
+    '/_protected/$scopeId/workspace': {
+      id: '/_protected/$scopeId/workspace'
+      path: '/workspace'
+      fullPath: '/$scopeId/workspace'
+      preLoaderRoute: typeof ProtectedScopeIdWorkspaceRouteImport
       parentRoute: typeof ProtectedScopeIdRoute
     }
     '/_protected/$scopeId/property': {
@@ -194,26 +211,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedScopeIdPropertyRouteImport
       parentRoute: typeof ProtectedScopeIdRoute
     }
-    '/_protected/$scopeId/account': {
-      id: '/_protected/$scopeId/account'
-      path: '/account'
-      fullPath: '/$scopeId/account'
-      preLoaderRoute: typeof ProtectedScopeIdAccountRouteImport
+    '/_protected/$scopeId/dashboard': {
+      id: '/_protected/$scopeId/dashboard'
+      path: '/dashboard'
+      fullPath: '/$scopeId/dashboard'
+      preLoaderRoute: typeof ProtectedScopeIdDashboardRouteImport
       parentRoute: typeof ProtectedScopeIdRoute
     }
   }
 }
 
 interface ProtectedScopeIdRouteChildren {
-  ProtectedScopeIdAccountRoute: typeof ProtectedScopeIdAccountRoute
+  ProtectedScopeIdDashboardRoute: typeof ProtectedScopeIdDashboardRoute
   ProtectedScopeIdPropertyRoute: typeof ProtectedScopeIdPropertyRoute
-  ProtectedScopeIdIndexRoute: typeof ProtectedScopeIdIndexRoute
+  ProtectedScopeIdWorkspaceRoute: typeof ProtectedScopeIdWorkspaceRoute
 }
 
 const ProtectedScopeIdRouteChildren: ProtectedScopeIdRouteChildren = {
-  ProtectedScopeIdAccountRoute: ProtectedScopeIdAccountRoute,
+  ProtectedScopeIdDashboardRoute: ProtectedScopeIdDashboardRoute,
   ProtectedScopeIdPropertyRoute: ProtectedScopeIdPropertyRoute,
-  ProtectedScopeIdIndexRoute: ProtectedScopeIdIndexRoute,
+  ProtectedScopeIdWorkspaceRoute: ProtectedScopeIdWorkspaceRoute,
 }
 
 const ProtectedScopeIdRouteWithChildren =
@@ -235,10 +252,22 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
   ProtectedRouteChildren,
 )
 
-const rootRouteChildren: RootRouteChildren = {
-  ProtectedRoute: ProtectedRouteWithChildren,
+interface PublicRouteChildren {
+  PublicLoginRoute: typeof PublicLoginRoute
+  PublicRegisterRoute: typeof PublicRegisterRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
   PublicLoginRoute: PublicLoginRoute,
   PublicRegisterRoute: PublicRegisterRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  ProtectedRoute: ProtectedRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

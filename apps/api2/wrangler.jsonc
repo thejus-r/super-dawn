@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "api2",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-31",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DATABASE",
+      "database_name": "dawn-db",
+      "database_id": "",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ],
+}

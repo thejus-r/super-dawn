@@ -1,0 +1,17 @@
+{
+  "name": "@superdawn/api2",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "cf-types": "wrangler types"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1",
+    "hono": "4.11.7"
+  },
+  "devDependencies": {
+    "@superdawn/typescript-config": "workspace:*",
+    "drizzle-kit": "^0.31.8",
+    "wrangler": "4.61.1"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "@superdawn/typescript-config/react.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+        "paths": {
+          "@/*": ["./src/*"]
+        }
+  },
+  "include": ["src", "./worker-configuration.d.ts"]
+}

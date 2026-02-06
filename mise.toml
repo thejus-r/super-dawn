@@ -1,0 +1,31 @@
+[tools]
+go = "latest"
+
+[vars]
+# database
+db_url = "postgresql://admin:password@localhost/dawn-db"
+
+# database
+path = "cmd/api-server/main.go"
+bin = "bin/api-server"
+
+migrations_dir = "cmd/api-server/migrations"
+
+[env]
+env = 'development'
+
+
+[tasks."db:create-migration"]
+description = "Create new migration"
+usage = '''
+arg "<name>" help="Migration file name"
+'''
+run = "goose create -dir={{ vars.migrations_dir }} ${usage_name} -s sql"
+
+[tasks."db:migrate-up"]
+description = "Migrate Database to latest version"
+run = "goose postgres {{ vars.db_url }} -dir={{ vars.migrations_dir }} up"
+
+[tasks."db:migrate-down"]
+description = "Migrate Database to initial"
+run = "goose postgres {{ vars.db_url }} -dir={{ vars.migrations_dir }} down"

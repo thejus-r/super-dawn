@@ -23,11 +23,11 @@ type SessionRepository struct {
 
 func (r *SessionRepository) Create(ctx context.Context, s *Session) error {
 	query := `
-		INSERT INTO SESSION (user_id, ip_address, user_agent, expires_at)
+		INSERT INTO sessions (user_id, token, ip_address, user_agent, expires_at)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, created_at`
 
-	row := r.db.QueryRow(ctx, query, s.UserID, s.IPAddress, s.UserAgent, s.ExpiresAt)
+	row := r.db.QueryRow(ctx, query, s.UserID, s.Token, s.IPAddress, s.UserAgent, s.ExpiresAt)
 
 	return row.Scan(
 		&s.ID,

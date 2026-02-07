@@ -2,7 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type Credential struct {
@@ -54,6 +57,10 @@ func (r *CredentialRepository) GetByProvider(ctx context.Context, provider, prov
 		&c.CreatedAt,
 		&c.UpdatedAt,
 	)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err

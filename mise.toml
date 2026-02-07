@@ -1,5 +1,6 @@
 [tools]
 go = "latest"
+air = "latest"
 
 [vars]
 # database
@@ -14,7 +15,22 @@ migrations_dir = "cmd/api-server/migrations"
 [env]
 env = 'development'
 
+## App
+[tasks.build]
+description = "Compiles the go application"
+run = "go build -o {{ vars.bin }} {{ vars.path }}"
+outputs = ["{{ vars.bin }}"]
 
+[tasks.run]
+description = "Runs the compiled binary"
+depends = ["build"]
+run = "{{ vars.bin }}"
+
+[tasks.dev]
+description = "Watches files, rebuilds, and restarts the app"
+run = "air"
+
+## Database Migration Tasks
 [tasks."db:create-migration"]
 description = "Create new migration"
 usage = '''

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"time"
+
+	"golang.org/x/oauth2"
 )
 
 type ProviderFactoryFunc func() Provider
@@ -34,12 +36,16 @@ type Provider interface {
 	// SetScopes sets the provider access permissions that will be requested later.
 	SetScopes(scope []string)
 
+	// ClientId returns the clientId
 	ClientId() string
 
+	// SetClient Id sets the clientId for the provider
 	SetClientId(clientId string)
 
+	// Gets the client secret
 	ClientSecret() string
 
+	// Gets the client secret
 	SetClientSecret(secret string)
 
 	RedirectURL() string
@@ -49,6 +55,12 @@ type Provider interface {
 	AuthURL() string
 
 	SetAuthURL(url string)
+
+	TokenURL() string
+
+	SetTokenURL(url string)
+
+	FetchRawUserInfo(token *oauth2.Token) ([]byte, error)
 }
 
 var Providers = map[string]ProviderFactoryFunc{}
